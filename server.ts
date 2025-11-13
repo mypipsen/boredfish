@@ -4,9 +4,11 @@ import { z } from "zod";
 
 import { errorHandler } from "./middleware/errorHandler.ts";
 import { validateSchema } from "./middleware/validate.ts";
-import SearchAgent from "./agents/search.ts";
+import OpenaiAgent from "./agents/openai.ts";
+import OllamaAgent from "./agents/ollama.ts";
 
-const searchAgent = new SearchAgent();
+const openaiAgent = new OpenaiAgent();
+const ollamaAgent = new OllamaAgent();
 
 const app = express();
 const port = 3000;
@@ -17,8 +19,18 @@ app.get("/api", (req, res) => {
   res.send("I'm a bored fish..");
 });
 
+app.get("/api/ollama", async (req, res) => {
+  console.info(req.url);
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+  res.flushHeaders();
+
+  return ollamaAgent.run(req.query.q as string, res);
+});
+
 app.get(
-  "/api/search",
+  "/api/openai",
   validateSchema({
     query: z.object({
       q: z.string().min(1).max(512),
@@ -31,18 +43,7 @@ app.get(
     res.setHeader("Connection", "keep-alive");
     res.flushHeaders();
 
-    const stream = await searchAgent.run(req.query.q as string);
-    const textStream = stream.toTextStream({
-      compatibleWithNodeStreams: false,
-    });
-
-    for await (const text of textStream) {
-      res.write(`data: ${JSON.stringify({ text })}\n\n`);
-    }
-
-    await stream.completed;
-    res.write("event: end\ndata: done\n\n");
-    res.end();
+    return openaiAgent.run(req.query.q as string, res);
   }
 );
 

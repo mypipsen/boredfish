@@ -1,4 +1,5 @@
 import { Agent, tool, run as runAgent } from "@openai/agents";
+import type { Response } from "express";
 import { z } from "zod";
 
 import tmdb from "../lib/tmdb.ts";
@@ -42,7 +43,7 @@ Do not put multiple movies on the same line.
   },
 });
 
-class SearchAgent {
+class OpenaiAgent {
   readonly _agent: Agent;
 
   constructor() {
@@ -53,10 +54,22 @@ class SearchAgent {
     });
   }
 
-  async run(query: string) {
-    console.info(`Starting SearchAgent run with query: ${query}`);
-    return runAgent(this._agent, query, { stream: true });
+  async run(query: string, res: Response) {
+    console.info(`Starting OpenaiAgent run with query: ${query}`);
+    const stream = await runAgent(this._agent, query, { stream: true });
+
+    const textStream = stream.toTextStream({
+      compatibleWithNodeStreams: false,
+    });
+
+    for await (const text of textStream) {
+      res.write(`data: ${JSON.stringify({ text })}\n\n`);
+    }
+
+    await stream.completed;
+    res.write("event: end\ndata: done\n\n");
+    res.end();
   }
 }
 
-export default SearchAgent;
+export default OpenaiAgent;
