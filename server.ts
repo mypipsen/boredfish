@@ -4,11 +4,9 @@ import { z } from "zod";
 
 import { errorHandler } from "./middleware/errorHandler.ts";
 import { validateSchema } from "./middleware/validate.ts";
-import OpenaiAgent from "./agents/openai.ts";
-import OllamaAgent from "./agents/ollama.ts";
+import ChatAgent from "./agents/chatAgent.ts";
 
-const openaiAgent = new OpenaiAgent();
-const ollamaAgent = new OllamaAgent();
+const chatAgent = new ChatAgent();
 
 const app = express();
 const port = 3000;
@@ -19,18 +17,8 @@ app.get("/api", (req, res) => {
   res.send("I'm a bored fish..");
 });
 
-app.get("/api/ollama", async (req, res) => {
-  console.info(req.url);
-  res.setHeader("Content-Type", "text/event-stream");
-  res.setHeader("Cache-Control", "no-cache");
-  res.setHeader("Connection", "keep-alive");
-  res.flushHeaders();
-
-  return ollamaAgent.run(req.query.q as string, res);
-});
-
 app.get(
-  "/api/openai",
+  "/api/chat",
   validateSchema({
     query: z.object({
       q: z.string().min(1).max(512),
@@ -43,7 +31,7 @@ app.get(
     res.setHeader("Connection", "keep-alive");
     res.flushHeaders();
 
-    return openaiAgent.run(req.query.q as string, res);
+    return chatAgent.run(req.query.q as string, res);
   }
 );
 
