@@ -64,7 +64,7 @@ You can also provide help with recommendations of movies or tv shows to watch.`;
               title: z
                 .string()
                 .describe(
-                  "The title of the movie or tv show. Most tools return this as a title property"
+                  "The title of the movie or tv show. Most tools return this as the title property"
                 ),
               year: z
                 .string()
@@ -80,6 +80,11 @@ You can also provide help with recommendations of movies or tv shows to watch.`;
                 .string()
                 .describe(
                   "A url to to the poster. Most tools return this as the poster_path"
+                ),
+              description: z
+                .string()
+                .describe(
+                  "A description of the movie or tv show. Most tools return this as the overview property"
                 ),
             })
             .describe("A list of movies returned to the user")
