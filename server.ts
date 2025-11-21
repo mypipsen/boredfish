@@ -4,7 +4,7 @@ import cors from "cors";
 import { z } from "zod";
 import { toNodeHandler, fromNodeHeaders } from "better-auth/node";
 
-import { auth } from "./lib/auth.ts";
+import { auth } from "./services/auth.ts";
 import { errorHandler } from "./middleware/errorHandler.ts";
 import { validateSchema } from "./middleware/validate.ts";
 import ChatAgent from "./agents/chatAgent.ts";

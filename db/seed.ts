@@ -1,7 +1,5 @@
-import { PrismaClient } from "../lib/generated/prisma/client.ts";
-import { auth } from "../lib/auth.ts";
-
-const prisma = new PrismaClient();
+import { prisma } from "./prisma.ts";
+import { auth } from "../services/auth.ts";
 
 async function main() {
   const defaultUser = {
