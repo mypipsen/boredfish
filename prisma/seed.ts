@@ -1,4 +1,4 @@
-import { prisma } from "./prisma.ts";
+import { prisma } from "./client.ts";
 import { auth } from "../services/auth.ts";
 
 async function main() {

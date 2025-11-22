@@ -1,7 +1,7 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 
-import { prisma } from "../db/prisma.ts";
+import { prisma } from "../prisma/client.ts";
 
 export function auth({ disableSignUp } = { disableSignUp: true }) {
   return betterAuth({

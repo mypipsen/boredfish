@@ -1,0 +1,62 @@
+enum MediaType {
+  movie
+  tv
+}
+
+model Media {
+  id              Int              @id
+  title           String
+  year            String
+  poster          String
+  type            MediaType
+  rating          Float
+  releaseDate     DateTime
+  createdAt       DateTime         @default(now())
+  watchlistMedias WatchlistMedia[]
+  archiveMedias   ArchiveMedia[]
+
+  @@map("media")
+}
+
+model Watchlist {
+  id        Int              @id @default(autoincrement())
+  media     WatchlistMedia[]
+  user      User             @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime         @default(now())
+
+  @@map("watchlist")
+}
+
+model Archive {
+  id        Int            @id @default(autoincrement())
+  media     ArchiveMedia[]
+  user      User           @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime       @default(now())
+
+  @@map("archive")
+}
+
+model WatchlistMedia {
+  media       Media     @relation(fields: [mediaId], references: [id])
+  mediaId     Int
+  watchlist   Watchlist @relation(fields: [watchlistId], references: [id])
+  watchlistId Int
+  createdAt   DateTime  @default(now())
+
+  @@id([mediaId, watchlistId])
+  @@map("watchlist_media")
+}
+
+model ArchiveMedia {
+  media     Media    @relation(fields: [mediaId], references: [id])
+  mediaId   Int
+  archive   Archive  @relation(fields: [archiveId], references: [id])
+  archiveId Int
+  liked     Boolean
+  createdAt DateTime @default(now())
+
+  @@id([mediaId, archiveId])
+  @@map("archive_media")
+}
