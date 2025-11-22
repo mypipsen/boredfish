@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import tmdb from "../lib/tmdb.ts";
 import * as MediaService from "../services/media.ts";
-import { prisma } from "../prisma/client.ts";
+import { getCurrentUserId } from "../middleware/userContext.ts";
 
 const MediaSchema = z.object({
   id: z.number().describe("The id of the movie or tv show"),
@@ -90,15 +90,8 @@ You can also provide help with recommendations of movies or tv shows to watch.`;
         inputSchema: MediaSchema,
         execute: async (data) => {
           console.info("Using addToWatchlist tool");
-
-          // FIXME: Replace with a session middleware to fetch user
-          const user = await prisma.user.findUniqueOrThrow({
-            where: {
-              email: "admin@bored.fish",
-            },
-          });
-
-          return MediaService.addToWatchlist(data, user);
+          const userId = getCurrentUserId();
+          return MediaService.addToWatchlist(data, userId);
         },
       }),
     };

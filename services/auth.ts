@@ -3,16 +3,12 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 
 import { prisma } from "../prisma/client.ts";
 
-export function auth({ disableSignUp } = { disableSignUp: true }) {
-  return betterAuth({
-    database: prismaAdapter(prisma, {
-      provider: "sqlite",
-    }),
-    emailAndPassword: {
-      enabled: true,
-      disableSignUp,
-      minPasswordLength: 5,
-    },
-    trustedOrigins: ["http://localhost:8080"],
-  });
-}
+export const auth = betterAuth({
+  database: prismaAdapter(prisma, { provider: "sqlite" }),
+  emailAndPassword: {
+    enabled: true,
+    disableSignUp: false,
+    minPasswordLength: 5,
+  },
+  trustedOrigins: ["http://localhost:8080"],
+});

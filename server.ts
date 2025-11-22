@@ -7,6 +7,8 @@ import { toNodeHandler, fromNodeHeaders } from "better-auth/node";
 import { auth } from "./services/auth.ts";
 import { errorHandler } from "./middleware/errorHandler.ts";
 import { validateSchema } from "./middleware/validate.ts";
+import { userContext } from "./middleware/userContext.ts";
+import { requireAuth } from "./middleware/requireAuth.ts";
 import ChatAgent from "./agents/chatAgent.ts";
 
 const chatAgent = new ChatAgent();
@@ -22,15 +24,16 @@ app.use(
   })
 );
 
-app.all("/api/auth/*splat", toNodeHandler(auth()));
+app.all("/api/auth/*splat", toNodeHandler(auth));
 
 app.use(express.json());
+app.use(userContext);
 
 app.get("/api/me", async (req, res) => {
- 	const session = await auth().api.getSession({
-      headers: fromNodeHeaders(req.headers),
-    });
-	return res.json(session);
+  const session = await auth.api.getSession({
+    headers: fromNodeHeaders(req.headers),
+  });
+  return res.json(session);
 });
 
 app.get("/api", (req, res) => {
@@ -39,6 +42,7 @@ app.get("/api", (req, res) => {
 
 app.get(
   "/api/chat",
+  requireAuth,
   validateSchema({
     query: z.object({
       q: z.string().min(1).max(512),

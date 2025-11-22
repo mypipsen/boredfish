@@ -1,8 +1,8 @@
-import { prisma, type Prisma, type User } from "../prisma/client.ts";
+import { prisma, type Prisma } from "../prisma/client.ts";
 
 export async function addToWatchlist(
   data: Prisma.MediaCreateInput,
-  user: User
+  userId: string
 ) {
   const media = await prisma.media.upsert({
     where: { id: data.id },
@@ -11,10 +11,10 @@ export async function addToWatchlist(
   });
 
   const watchlist = await prisma.watchlist.upsert({
-    where: { userId: user.id },
+    where: { userId },
     update: {},
     create: {
-      userId: user.id,
+      userId,
     },
   });
 

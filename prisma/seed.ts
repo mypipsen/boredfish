@@ -13,7 +13,7 @@ async function main() {
   });
 
   if (!existing) {
-    await auth({ disableSignUp: false }).api.signUpEmail({
+    await auth.api.signUpEmail({
       body: {
         email: defaultUser.email,
         name: defaultUser.name,
