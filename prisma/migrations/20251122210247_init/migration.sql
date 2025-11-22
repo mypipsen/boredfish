@@ -106,6 +106,9 @@ CREATE TABLE "verification" (
 CREATE UNIQUE INDEX "watchlist_userId_key" ON "watchlist"("userId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "archive_userId_key" ON "archive"("userId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "user_email_key" ON "user"("email");
 
 -- CreateIndex

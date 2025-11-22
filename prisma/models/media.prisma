@@ -38,6 +38,7 @@ model Archive {
   createdAt DateTime       @default(now())
 
   @@map("archive")
+  @@unique(userId)
 }
 
 model WatchlistMedia {

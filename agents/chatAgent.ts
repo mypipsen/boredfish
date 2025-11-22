@@ -4,7 +4,7 @@ import type { Response } from "express";
 import { z } from "zod";
 
 import tmdb from "../lib/tmdb.ts";
-import * as MediaService from "../services/media.ts";
+import * as watchlistService from "../services/watchlist.ts";
 import { getCurrentUserId } from "../middleware/userContext.ts";
 
 const MediaSchema = z.object({
@@ -19,8 +19,8 @@ const MediaSchema = z.object({
     .describe(
       "The year the movie or tv show was released. Found from the release_date string returned in most tools"
     ),
-  releaseDate: z
-    .string()
+  releaseDate: z.coerce
+    .date()
     .describe(
       "The release date of the movie or tv show. Found from the release_date string returned in most tools"
     ),
@@ -91,7 +91,7 @@ You can also provide help with recommendations of movies or tv shows to watch.`;
         execute: async (data) => {
           console.info("Using addToWatchlist tool");
           const userId = getCurrentUserId();
-          return MediaService.addToWatchlist(data, userId);
+          return watchlistService.addMedia(data, userId);
         },
       }),
     };

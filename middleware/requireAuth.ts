@@ -17,6 +17,8 @@ export async function requireAuth(
       return res.status(401).json({ error: "Unauthorized" });
     }
 
+    (req as any).userId = session.user.id;
+
     next();
   } catch (err) {
     console.error("Auth error:", err);

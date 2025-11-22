@@ -12,7 +12,7 @@ export function validateSchema(schemas: Schemas) {
     try {
       if (schemas.body) {
         const parsed = schemas.body.parse(req.body);
-        // req.body = parsed;
+        req.body = parsed;
       }
 
       if (schemas.query) {
