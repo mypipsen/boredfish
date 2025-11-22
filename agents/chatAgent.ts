@@ -4,6 +4,45 @@ import type { Response } from "express";
 import { z } from "zod";
 
 import tmdb from "../lib/tmdb.ts";
+import * as MediaService from "../services/media.ts";
+import { prisma } from "../prisma/client.ts";
+
+const MediaSchema = z.object({
+  id: z.number().describe("The id of the movie or tv show"),
+  title: z
+    .string()
+    .describe(
+      "The title of the movie or tv show. Most tools return this as the title property"
+    ),
+  year: z
+    .string()
+    .describe(
+      "The year the movie or tv show was released. Found from the release_date string returned in most tools"
+    ),
+  releaseDate: z
+    .string()
+    .describe(
+      "The release date of the movie or tv show. Found from the release_date string returned in most tools"
+    ),
+  rating: z
+    .number()
+    .describe(
+      "The rating of the movie. Most tools return this as vote_average. Not all movies and tv shows have a rating."
+    ),
+  poster: z
+    .string()
+    .describe(
+      "A url to to the poster. Most tools return this as the poster_path"
+    ),
+  description: z
+    .string()
+    .describe(
+      "A description of the movie or tv show. Most tools return this as the overview property"
+    ),
+  type: z
+    .enum(["movie", "tv"])
+    .describe("The type of the media. Either movie or tv"),
+});
 
 export default class ChatAgent {
   readonly _agent;
@@ -34,7 +73,7 @@ You can also provide help with recommendations of movies or tv shows to watch.`;
           query: z.string(),
         }),
         execute: async ({ query }) => {
-          console.info(`Using multi search tool with query ${query}`);
+          console.info(`Using multiSearch tool with query ${query}`);
           return tmdb.search.multi({ query });
         },
       }),
@@ -42,8 +81,24 @@ You can also provide help with recommendations of movies or tv shows to watch.`;
         description: "Get a list of movies that are being released soon.",
         inputSchema: z.object({}),
         execute: async () => {
-          console.info("Using upcoming movies tool");
+          console.info("Using upcomingMovies tool");
           return tmdb.movies.upcoming();
+        },
+      }),
+      addToWatchlist: tool({
+        description: "Add a movie or tv show to the user's watchlist.",
+        inputSchema: MediaSchema,
+        execute: async (data) => {
+          console.info("Using addToWatchlist tool");
+
+          // FIXME: Replace with a session middleware to fetch user
+          const user = await prisma.user.findUniqueOrThrow({
+            where: {
+              email: "admin@bored.fish",
+            },
+          });
+
+          return MediaService.addToWatchlist(data, user);
         },
       }),
     };
@@ -57,38 +112,7 @@ You can also provide help with recommendations of movies or tv shows to watch.`;
           .describe(
             "The general response to the request. Do not include movie or tv shows details in this text"
           ),
-        movies: z.array(
-          z
-            .object({
-              id: z.number().describe("The id of the movie or tv show"),
-              title: z
-                .string()
-                .describe(
-                  "The title of the movie or tv show. Most tools return this as the title property"
-                ),
-              year: z
-                .string()
-                .describe(
-                  "The year the movie or tv show was released. Found from the release_date string returned in most tools"
-                ),
-              rating: z
-                .number()
-                .describe(
-                  "The rating of the movie. Most tools return this as vote_average. Not all movies and tv shows have a rating."
-                ),
-              poster: z
-                .string()
-                .describe(
-                  "A url to to the poster. Most tools return this as the poster_path"
-                ),
-              description: z
-                .string()
-                .describe(
-                  "A description of the movie or tv show. Most tools return this as the overview property"
-                ),
-            })
-            .describe("A list of movies returned to the user")
-        ),
+        movies: z.array(MediaSchema),
       }),
     });
   }

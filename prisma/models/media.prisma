@@ -6,6 +6,7 @@ enum MediaType {
 model Media {
   id              Int              @id
   title           String
+  description String
   year            String
   poster          String
   type            MediaType
@@ -26,6 +27,7 @@ model Watchlist {
   createdAt DateTime         @default(now())
 
   @@map("watchlist")
+  @@unique(userId)
 }
 
 model Archive {
