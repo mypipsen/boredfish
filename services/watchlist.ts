@@ -38,5 +38,15 @@ export async function getMedia(userId: string) {
     include: { media: true },
   });
 
-  return items.map((i) => i.media);
+  return items.map((item) => ({
+    id: item.media.id,
+    title: item.media.title,
+    description: item.media.description,
+    year: item.media.year,
+    poster: item.media.poster,
+    type: item.media.type,
+    rating: item.media.rating,
+    releaseDate: item.media.releaseDate,
+    createdAt: item.createdAt,
+  }));
 }
