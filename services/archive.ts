@@ -2,6 +2,26 @@ import createError from 'http-errors';
 
 import { prisma } from '../prisma/client.ts';
 
+export async function getMedia(userId: string) {
+  const items = await prisma.archiveMedia.findMany({
+    where: { archive: { userId } },
+    include: { media: true },
+  });
+
+  return items.map((item) => ({
+    id: item.media.id,
+    title: item.media.title,
+    description: item.media.description,
+    year: item.media.year,
+    poster: item.media.poster,
+    type: item.media.type,
+    rating: item.media.rating,
+    releaseDate: item.media.releaseDate,
+    liked: item.liked,
+    createdAt: item.createdAt,
+  }));
+}
+
 export async function addMedia(id: number, liked: boolean, userId: string) {
   const media = await prisma.media.findFirst({
     where: { id },
@@ -46,26 +66,6 @@ export async function addMedia(id: number, liked: boolean, userId: string) {
   });
 
   return archiveMedia;
-}
-
-export async function getMedia(userId: string) {
-  const items = await prisma.archiveMedia.findMany({
-    where: { archive: { userId } },
-    include: { media: true },
-  });
-
-  return items.map((item) => ({
-    id: item.media.id,
-    title: item.media.title,
-    description: item.media.description,
-    year: item.media.year,
-    poster: item.media.poster,
-    type: item.media.type,
-    rating: item.media.rating,
-    releaseDate: item.media.releaseDate,
-    liked: item.liked,
-    createdAt: item.createdAt,
-  }));
 }
 
 export async function updateMedia(id: number, liked: boolean, userId: string) {

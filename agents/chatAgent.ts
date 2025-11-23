@@ -3,9 +3,7 @@ import { Output, ToolLoopAgent, tool } from 'ai';
 import type { Response } from 'express';
 import { z } from 'zod';
 
-import tmdb from '../lib/tmdb.ts';
-import * as watchlistService from '../services/watchlist.ts';
-import { getCurrentUserId } from '../middleware/userContext.ts';
+import { tmdb } from '../lib/tmdb.ts';
 
 const MediaSchema = z.object({
   id: z.number().describe('The id of the movie or tv show'),
@@ -75,15 +73,6 @@ You can also provide help with recommendations of movies or tv shows to watch.`;
         execute: async () => {
           console.info('Using upcomingMovies tool');
           return tmdb.movies.upcoming();
-        },
-      }),
-      addToWatchlist: tool({
-        description: "Add a movie or tv show to the user's watchlist.",
-        inputSchema: MediaSchema,
-        execute: async (data) => {
-          console.info('Using addToWatchlist tool');
-          const userId = getCurrentUserId();
-          return watchlistService.addMedia(data, userId);
         },
       }),
     };
