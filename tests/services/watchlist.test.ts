@@ -1,9 +1,9 @@
-import { it, describe, expect, beforeEach } from "vitest";
+import { it, describe, expect } from "vitest";
 
 import { prisma, type Prisma } from "../../prisma/client.ts";
 import * as watchlistService from "../../services/watchlist.ts";
 
-import { TEST_USER } from "../fixtures";
+import * as fixtures from "../fixtures.json";
 
 describe("the watchlist service", function () {
   describe("when adding media to watchlist", function () {
@@ -22,7 +22,7 @@ describe("the watchlist service", function () {
     it("should create the expected objects", async function () {
       const watchlistMedia = await watchlistService.addMedia(
         data,
-        TEST_USER.id
+        fixtures.users.admin.id
       );
       const media = await prisma.media.findFirst({
         where: {
@@ -31,14 +31,14 @@ describe("the watchlist service", function () {
       });
       const watchlist = await prisma.watchlist.findFirst({
         where: {
-          userId: TEST_USER.id,
+          userId: fixtures.users.admin.id,
         },
       });
 
       expect(media).toMatchObject(data);
       expect(watchlist).toMatchObject({
         id: expect.any(Number),
-        userId: TEST_USER.id,
+        userId: fixtures.users.admin.id,
         createdAt: expect.any(Date),
       });
       expect(watchlistMedia).toMatchObject({
