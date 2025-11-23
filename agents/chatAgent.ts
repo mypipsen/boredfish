@@ -1,47 +1,39 @@
-import { openai } from "@ai-sdk/openai";
-import { Output, ToolLoopAgent, tool } from "ai";
-import type { Response } from "express";
-import { z } from "zod";
+import { openai } from '@ai-sdk/openai';
+import { Output, ToolLoopAgent, tool } from 'ai';
+import type { Response } from 'express';
+import { z } from 'zod';
 
-import tmdb from "../lib/tmdb.ts";
-import * as watchlistService from "../services/watchlist.ts";
-import { getCurrentUserId } from "../middleware/userContext.ts";
+import tmdb from '../lib/tmdb.ts';
+import * as watchlistService from '../services/watchlist.ts';
+import { getCurrentUserId } from '../middleware/userContext.ts';
 
 const MediaSchema = z.object({
-  id: z.number().describe("The id of the movie or tv show"),
+  id: z.number().describe('The id of the movie or tv show'),
   title: z
     .string()
-    .describe(
-      "The title of the movie or tv show. Most tools return this as the title property"
-    ),
+    .describe('The title of the movie or tv show. Most tools return this as the title property'),
   year: z
     .string()
     .describe(
-      "The year the movie or tv show was released. Found from the release_date string returned in most tools"
+      'The year the movie or tv show was released. Found from the release_date string returned in most tools'
     ),
   releaseDate: z.coerce
     .date()
     .describe(
-      "The release date of the movie or tv show. Found from the release_date string returned in most tools"
+      'The release date of the movie or tv show. Found from the release_date string returned in most tools'
     ),
   rating: z
     .number()
     .describe(
-      "The rating of the movie. Most tools return this as vote_average. Not all movies and tv shows have a rating."
+      'The rating of the movie. Most tools return this as vote_average. Not all movies and tv shows have a rating.'
     ),
-  poster: z
-    .string()
-    .describe(
-      "A url to to the poster. Most tools return this as the poster_path"
-    ),
+  poster: z.string().describe('A url to to the poster. Most tools return this as the poster_path'),
   description: z
     .string()
     .describe(
-      "A description of the movie or tv show. Most tools return this as the overview property"
+      'A description of the movie or tv show. Most tools return this as the overview property'
     ),
-  type: z
-    .enum(["movie", "tv"])
-    .describe("The type of the media. Either movie or tv"),
+  type: z.enum(['movie', 'tv']).describe('The type of the media. Either movie or tv'),
 });
 
 export default class ChatAgent {
@@ -57,7 +49,7 @@ export default class ChatAgent {
   }
 
   get model() {
-    return openai("gpt-4o");
+    return openai('gpt-4o');
   }
 
   get instructions() {
@@ -68,7 +60,7 @@ You can also provide help with recommendations of movies or tv shows to watch.`;
   get tools() {
     return {
       multiSearch: tool({
-        description: "Search for movies or TV shows based on a query string.",
+        description: 'Search for movies or TV shows based on a query string.',
         inputSchema: z.object({
           query: z.string(),
         }),
@@ -78,10 +70,10 @@ You can also provide help with recommendations of movies or tv shows to watch.`;
         },
       }),
       upcomingMovies: tool({
-        description: "Get a list of movies that are being released soon.",
+        description: 'Get a list of movies that are being released soon.',
         inputSchema: z.object({}),
         execute: async () => {
-          console.info("Using upcomingMovies tool");
+          console.info('Using upcomingMovies tool');
           return tmdb.movies.upcoming();
         },
       }),
@@ -89,7 +81,7 @@ You can also provide help with recommendations of movies or tv shows to watch.`;
         description: "Add a movie or tv show to the user's watchlist.",
         inputSchema: MediaSchema,
         execute: async (data) => {
-          console.info("Using addToWatchlist tool");
+          console.info('Using addToWatchlist tool');
           const userId = getCurrentUserId();
           return watchlistService.addMedia(data, userId);
         },
@@ -103,7 +95,7 @@ You can also provide help with recommendations of movies or tv shows to watch.`;
         text: z
           .string()
           .describe(
-            "The general response to the request. Do not include movie or tv shows details in this text"
+            'The general response to the request. Do not include movie or tv shows details in this text'
           ),
         movies: z.array(MediaSchema),
       }),
@@ -119,7 +111,7 @@ You can also provide help with recommendations of movies or tv shows to watch.`;
       res.write(`data: ${JSON.stringify(chunk)}\n\n`);
     }
 
-    res.write("event: end\ndata: done\n\n");
+    res.write('event: end\ndata: done\n\n');
     res.end();
   }
 }

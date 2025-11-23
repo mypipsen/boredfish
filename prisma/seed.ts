@@ -1,10 +1,10 @@
-import fs from "fs";
-import path from "path";
+import fs from 'fs';
+import path from 'path';
 
-import "dotenv/config";
+import 'dotenv/config';
 
-import { prisma } from "./client.ts";
-import { auth } from "../services/auth.ts";
+import { prisma } from './client.ts';
+import { auth } from '../services/auth.ts';
 
 type FixtureUser = {
   id: string;
@@ -12,14 +12,14 @@ type FixtureUser = {
   name: string;
 };
 
-const fixturesPath = path.join(process.cwd(), "tests", "fixtures.json");
+const fixturesPath = path.join(process.cwd(), 'tests', 'fixtures.json');
 const fixtures: { users: Record<string, FixtureUser> } = { users: {} };
 
 const seedUsers = {
   admin: {
-    email: "admin@bored.fish",
-    name: "admin",
-    password: "admin",
+    email: 'admin@bored.fish',
+    name: 'admin',
+    password: 'admin',
   },
 };
 
@@ -44,7 +44,7 @@ async function main() {
         name: user.name,
       };
 
-      console.log("User created:", user.email);
+      console.log('User created:', user.email);
     }
   }
 }
@@ -56,7 +56,7 @@ main()
   })
   .finally(() => {
     fs.writeFileSync(fixturesPath, JSON.stringify(fixtures, null, 2));
-    console.log("Fixtures written to", fixturesPath);
+    console.log('Fixtures written to', fixturesPath);
 
     prisma.$disconnect();
   });

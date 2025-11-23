@@ -1,10 +1,10 @@
-import assert from "assert";
-import { AsyncLocalStorage } from "async_hooks";
+import assert from 'assert';
+import { AsyncLocalStorage } from 'async_hooks';
 
-import { fromNodeHeaders } from "better-auth/node";
-import type { Request, Response, NextFunction } from "express";
+import { fromNodeHeaders } from 'better-auth/node';
+import type { Request, Response, NextFunction } from 'express';
 
-import { auth } from "../services/auth.ts";
+import { auth } from '../services/auth.ts';
 
 type Context = {
   userId?: string;
@@ -25,7 +25,7 @@ export function userContext(req: Request, res: Response, next: NextFunction) {
         store.userId = session.user.id;
       }
     } catch (err) {
-      console.error("Failed to get session:", err);
+      console.error('Failed to get session:', err);
     }
 
     next();

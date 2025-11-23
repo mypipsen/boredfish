@@ -1,4 +1,4 @@
-import { prisma, type Prisma } from "../prisma/client.ts";
+import { prisma, type Prisma } from '../prisma/client.ts';
 
 export async function addMedia(data: Prisma.MediaCreateInput, userId: string) {
   const media = await prisma.media.upsert({

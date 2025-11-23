@@ -1,13 +1,14 @@
-import { Router } from "express";
-import { z } from "zod";
+import { Router } from 'express';
+import { z } from 'zod';
 
-import * as watchlistService from "../services/watchlist.ts";
-import { validateSchema } from "../middleware/validate.ts";
-import { requireAuth } from "../middleware/requireAuth.ts";
+import * as watchlistService from '../services/watchlist.ts';
+import { validateSchema } from '../middleware/validate.ts';
+import { requireAuth } from '../middleware/requireAuth.ts';
 
 const router = Router();
 
-router.get("/watchlist", requireAuth, async (req, res) => {
+router.get('/watchlist', requireAuth, async (req, res) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const userId = (req as any).userId;
   const media = await watchlistService.getMedia(userId);
 
@@ -15,7 +16,7 @@ router.get("/watchlist", requireAuth, async (req, res) => {
 });
 
 router.post(
-  "/watchlist/media",
+  '/watchlist/media',
   requireAuth,
   validateSchema({
     body: z.object({
@@ -26,10 +27,11 @@ router.post(
       rating: z.number(),
       poster: z.string(),
       description: z.string(),
-      type: z.enum(["movie", "tv"]),
+      type: z.enum(['movie', 'tv']),
     }),
   }),
   async (req, res) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const userId = (req as any).userId;
     await watchlistService.addMedia(req.body, userId);
 

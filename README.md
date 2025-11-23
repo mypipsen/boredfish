@@ -21,12 +21,14 @@ bored.fish is a node.js backend application designed to help users manage movie/
 ## Installation
 
 1.  **Clone the repository:**
+
     ```sh
     git clone <repository-url>
     cd boredfish
     ```
 
 2.  **Install dependencies:**
+
     ```sh
     fnm use
     npm ci
@@ -34,9 +36,11 @@ bored.fish is a node.js backend application designed to help users manage movie/
 
 3.  **Configure Environment Variables:**
     Copy the example environment file and fill in the required values.
+
     ```sh
     cp .env.example .env
     ```
+
     You will need to provide keys for:
     - `DATABASE_URL` (defaults to local sqlite file)
     - `BETTER_AUTH_SECRET`

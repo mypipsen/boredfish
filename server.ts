@@ -1,18 +1,18 @@
-import "dotenv/config";
-import express from "express";
-import cors from "cors";
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
 
-import { errorHandler } from "./middleware/errorHandler.ts";
-import { userContext } from "./middleware/userContext.ts";
-import { registerRoutes } from "./routes/index.ts";
+import { errorHandler } from './middleware/errorHandler.ts';
+import { userContext } from './middleware/userContext.ts';
+import { registerRoutes } from './routes/index.ts';
 
 const app = express();
 const port = 3000;
 
 app.use(
   cors({
-    origin: "http://localhost:8080",
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: 'http://localhost:8080',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
   })
 );

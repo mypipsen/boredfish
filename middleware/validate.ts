@@ -1,5 +1,5 @@
-import { z, type ZodTypeAny } from "zod";
-import type { Request, Response, NextFunction } from "express";
+import { z, type ZodTypeAny } from 'zod';
+import type { Request, Response, NextFunction } from 'express';
 
 type Schemas = {
   body?: ZodTypeAny;
@@ -16,12 +16,12 @@ export function validateSchema(schemas: Schemas) {
       }
 
       if (schemas.query) {
-        const parsed = schemas.query.parse(req.query);
+        schemas.query.parse(req.query);
         // req.query = parsed;
       }
 
       if (schemas.params) {
-        const parsed = schemas.params.parse(req.params);
+        schemas.params.parse(req.params);
         // req.params = parsed;
       }
 
