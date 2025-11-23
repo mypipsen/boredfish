@@ -1,13 +1,12 @@
-import { it, describe, expect } from "vitest";
+import { it, describe, expect, beforeEach } from "vitest";
 
 import { prisma, type Prisma } from "../../prisma/client.ts";
 import * as watchlistService from "../../services/watchlist.ts";
-
 import * as fixtures from "../fixtures.json";
 
 describe("the watchlist service", function () {
   describe("when adding media to watchlist", function () {
-    const data: Prisma.MediaCreateInput = {
+    const mediaData: Prisma.MediaCreateInput = {
       id: 12345,
       title: "House of the Dragon",
       description:
@@ -21,7 +20,7 @@ describe("the watchlist service", function () {
 
     it("should create the expected objects", async function () {
       const watchlistMedia = await watchlistService.addMedia(
-        data,
+        mediaData,
         fixtures.users.admin.id
       );
       const media = await prisma.media.findFirst({
@@ -35,7 +34,7 @@ describe("the watchlist service", function () {
         },
       });
 
-      expect(media).toMatchObject(data);
+      expect(media).toMatchObject(mediaData);
       expect(watchlist).toMatchObject({
         id: expect.any(Number),
         userId: fixtures.users.admin.id,
@@ -45,6 +44,79 @@ describe("the watchlist service", function () {
         mediaId: media!.id,
         watchlistId: watchlist!.id,
         createdAt: expect.any(Date),
+      });
+    });
+
+    describe("when media exists", function () {
+      let existingMedia: Prisma.MediaModel;
+
+      beforeEach(async function () {
+        existingMedia = await prisma.media.create({
+          data: mediaData,
+        });
+      });
+
+      it("should add existing media", async function () {
+        const watchlistMedia = await watchlistService.addMedia(
+          mediaData,
+          fixtures.users.admin.id
+        );
+
+        expect(watchlistMedia.mediaId).to.equal(existingMedia.id);
+      });
+    });
+
+    describe("when watchlist exists", function () {
+      let existingWatchlist: Prisma.WatchlistModel;
+
+      beforeEach(async function () {
+        existingWatchlist = await prisma.watchlist.create({
+          data: {
+            userId: fixtures.users.admin.id,
+          },
+        });
+      });
+
+      it("should add to existing watchlist", async function () {
+        const watchlistMedia = await watchlistService.addMedia(
+          mediaData,
+          fixtures.users.admin.id
+        );
+
+        expect(watchlistMedia.watchlistId).to.equal(existingWatchlist.id);
+      });
+    });
+
+    describe("when media is already added to watchlist", function () {
+      let existingWatchlistMedia: Prisma.WatchlistMediaModel;
+
+      beforeEach(async function () {
+        const media = await prisma.media.create({
+          data: mediaData,
+        });
+
+        const watchlist = await prisma.watchlist.create({
+          data: {
+            userId: fixtures.users.admin.id,
+          },
+        });
+
+        existingWatchlistMedia = await prisma.watchlistMedia.create({
+          data: {
+            watchlistId: watchlist.id,
+            mediaId: media.id,
+            createdAt: new Date("2025-01-01"),
+          },
+        });
+      });
+
+      it("should return the existing watchlistMedia", async function () {
+        const watchlistMedia = await watchlistService.addMedia(
+          mediaData,
+          fixtures.users.admin.id
+        );
+
+        expect(watchlistMedia).toMatchObject(existingWatchlistMedia);
       });
     });
   });
