@@ -1,25 +1,27 @@
-import { beforeEach } from "vitest";
-import { prisma } from "../prisma/client";
+import { PrismaTestingHelper } from "@chax-at/transactional-prisma-testing";
+import { afterEach, beforeEach, vi } from "vitest";
+
+let prismaTestingHelper: PrismaTestingHelper<any>;
+
+// Mock prisma so all tests use the test transaction
+vi.mock("../prisma/client", async () => {
+  const prismaClient = await vi.importActual<
+    typeof import("../prisma/client.ts")
+  >("../prisma/client.ts");
+  
+  prismaTestingHelper = new PrismaTestingHelper(prismaClient.prisma);
+  const prismaTest = prismaTestingHelper.getProxyClient();
+
+  return {
+    ...prismaClient,
+    prisma: prismaTest,
+  };
+});
 
 beforeEach(async () => {
-  const tables = [
-    "archive",
-    "archive_media",
-    "media",
-    "watchlist",
-    "watchlist_media",
-  ];
+  await prismaTestingHelper.startNewTransaction();
+});
 
-  try {
-    await prisma.$executeRawUnsafe(`PRAGMA foreign_keys = OFF;`);
-
-    for (const name of tables) {
-      await prisma.$executeRawUnsafe(`DELETE FROM "${name}";`);
-      await prisma.$executeRawUnsafe(
-        `DELETE FROM sqlite_sequence WHERE name='${name}';`
-      );
-    }
-  } finally {
-    await prisma.$executeRawUnsafe(`PRAGMA foreign_keys = ON;`);
-  }
+afterEach(async () => {
+  prismaTestingHelper.rollbackCurrentTransaction();
 });
