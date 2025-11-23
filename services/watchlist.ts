@@ -1,5 +1,24 @@
 import { prisma, type Prisma } from '../prisma/client.ts';
 
+export async function getMedia(userId: string) {
+  const items = await prisma.watchlistMedia.findMany({
+    where: { watchlist: { userId } },
+    include: { media: true },
+  });
+
+  return items.map((item) => ({
+    id: item.media.id,
+    title: item.media.title,
+    description: item.media.description,
+    year: item.media.year,
+    poster: item.media.poster,
+    type: item.media.type,
+    rating: item.media.rating,
+    releaseDate: item.media.releaseDate,
+    createdAt: item.createdAt,
+  }));
+}
+
 export async function addMedia(data: Prisma.MediaCreateInput, userId: string) {
   const media = await prisma.media.upsert({
     where: { id: data.id },
@@ -32,21 +51,15 @@ export async function addMedia(data: Prisma.MediaCreateInput, userId: string) {
   return watchlistMedia;
 }
 
-export async function getMedia(userId: string) {
-  const items = await prisma.watchlistMedia.findMany({
-    where: { watchlist: { userId } },
-    include: { media: true },
+export async function deleteMedia(id: number, userId: string) {
+  return prisma.watchlistMedia.deleteMany({
+    where: {
+      media: {
+        id,
+      },
+      watchlist: {
+        userId,
+      },
+    },
   });
-
-  return items.map((item) => ({
-    id: item.media.id,
-    title: item.media.title,
-    description: item.media.description,
-    year: item.media.year,
-    poster: item.media.poster,
-    type: item.media.type,
-    rating: item.media.rating,
-    releaseDate: item.media.releaseDate,
-    createdAt: item.createdAt,
-  }));
 }

@@ -21,8 +21,8 @@ export function validateSchema(schemas: Schemas) {
       }
 
       if (schemas.params) {
-        schemas.params.parse(req.params);
-        // req.params = parsed;
+        const parsed = schemas.params.parse(req.params);
+        req.params = parsed;
       }
 
       next();

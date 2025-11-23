@@ -1,46 +1,66 @@
 import { Router } from 'express';
 import { z } from 'zod';
 
-import * as watchlistService from '../services/watchlist.ts';
+import * as archiveService from '../services/archive.ts';
 import { validateSchema } from '../middleware/validate.ts';
 import { requireAuth } from '../middleware/requireAuth.ts';
 
 const router = Router();
 
-router.get('/watchlist', requireAuth, async (req, res) => {
+router.get('/archive', requireAuth, async (req, res) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const userId = (req as any).userId;
-  const media = await watchlistService.getMedia(userId);
+  const media = await archiveService.getMedia(userId);
 
   res.json(media);
 });
 
 router.post(
-  '/watchlist/media',
+  '/archive',
   requireAuth,
   validateSchema({
     body: z.object({
       id: z.number(),
-      title: z.string(),
-      year: z.string(),
-      releaseDate: z.coerce.date(),
-      rating: z.number(),
-      poster: z.string(),
-      description: z.string(),
-      type: z.enum(['movie', 'tv']),
+      liked: z.boolean(),
     }),
   }),
   async (req, res) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const userId = (req as any).userId;
-    await watchlistService.addMedia(req.body, userId);
+    const { id, liked } = req.body;
+
+    await archiveService.addMedia(id, liked, userId);
+
+    res.status(204).send();
+  }
+);
+
+router.patch(
+  '/archive/media/:id/like',
+  requireAuth,
+  validateSchema({
+    params: z.object({
+      id: z.coerce.number(),
+    }),
+    body: z.object({
+      liked: z.boolean(),
+    }),
+  }),
+  async (req, res) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const userId = (req as any).userId;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { id } = (req as any).params;
+    const { liked } = req.body;
+
+    await archiveService.updateMedia(id, liked, userId);
 
     res.status(204).send();
   }
 );
 
 router.delete(
-  '/watchlist/media/:id',
+  '/archive/media/:id',
   requireAuth,
   validateSchema({
     params: z.object({
@@ -53,7 +73,7 @@ router.delete(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { id } = (req as any).params;
 
-    await watchlistService.deleteMedia(id, userId);
+    await archiveService.deleteMedia(id, userId);
 
     res.status(204).send();
   }
