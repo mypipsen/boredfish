@@ -189,14 +189,64 @@ describe('the media service', function () {
   });
 
   describe('when updating user media', function () {
-    it('should update with expected values', async function () {});
+    it('should update with expected values', async function () {
+      const updatedUserMedia = await mediaService.updateMedia(
+        fixtures.media.lotrFellowship.id,
+        {
+          status: 'archived',
+          liked: false,
+        },
+        fixtures.users.admin.id
+      );
+
+      expect(updatedUserMedia).toMatchObject({
+        mediaId: fixtures.media.lotrFellowship.id,
+        userId: fixtures.users.admin.id,
+        status: 'archived',
+        liked: false,
+      });
+    });
 
     describe('when media does not exist', function () {
-      it('should throw an error', async function () {});
+      it('should throw an error', async function () {
+        await expect(
+          mediaService.updateMedia(
+            999999,
+            {
+              status: 'watchlist',
+            },
+            fixtures.users.admin.id
+          )
+        ).rejects.toMatchObject({
+          status: 404,
+          message: 'Not found',
+        });
+      });
     });
   });
 
   describe('when deleting user media', function () {
-    it('should delete the media', async function () {});
+    it('should delete the media', async function () {
+      const deletedUserMedia = await mediaService.deleteMedia(
+        fixtures.media.lotrFellowship.id,
+        fixtures.users.admin.id
+      );
+
+      expect(deletedUserMedia).toMatchObject({
+        mediaId: fixtures.media.lotrFellowship.id,
+        userId: fixtures.users.admin.id,
+      });
+
+      const userMedia = await prisma.userMedia.findUnique({
+        where: {
+          userId_mediaId: {
+            userId: fixtures.users.admin.id,
+            mediaId: fixtures.media.lotrFellowship.id,
+          },
+        },
+      });
+
+      expect(userMedia).toBeNull();
+    });
   });
 });

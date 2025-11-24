@@ -95,7 +95,7 @@ export async function updateMedia(id: number, data: UpdateMediaType, userId: str
   });
 
   if (!userMedia) {
-    return createError(404, 'Not found');
+    throw createError(404, 'Not found');
   }
 
   return prisma.userMedia.update({
