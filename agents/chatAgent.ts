@@ -1,5 +1,5 @@
 import { openai } from '@ai-sdk/openai';
-import { Output, ToolLoopAgent, tool } from 'ai';
+import { Output, tool, ToolLoopAgent } from 'ai';
 import type { Response } from 'express';
 import { z } from 'zod';
 

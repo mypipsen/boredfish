@@ -1,5 +1,5 @@
-import { Router } from 'express';
 import { toNodeHandler } from 'better-auth/node';
+import { Router } from 'express';
 
 import { auth } from '../services/auth.ts';
 

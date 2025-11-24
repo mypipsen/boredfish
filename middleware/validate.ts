@@ -1,5 +1,5 @@
+import type { NextFunction, Request, Response } from 'express';
 import { z, type ZodTypeAny } from 'zod';
-import type { Request, Response, NextFunction } from 'express';
 
 type Schemas = {
   body?: ZodTypeAny;

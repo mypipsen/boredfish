@@ -1,6 +1,6 @@
 import createError from 'http-errors';
 
-import { prisma, type MediaType, type UserMediaStatus } from '../prisma/client.ts';
+import { type MediaType, prisma, type UserMediaStatus } from '../prisma/client.ts';
 
 export async function getMedia(userId: string, status: UserMediaStatus) {
   const userMediaEntries = await prisma.userMedia.findMany({

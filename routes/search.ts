@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import { z } from 'zod';
 
-import * as searchService from '../services/search.ts';
-import { validateSchema } from '../middleware/validate.ts';
 import { requireAuth } from '../middleware/requireAuth.ts';
+import { validateSchema } from '../middleware/validate.ts';
+import * as searchService from '../services/search.ts';
 
 const router = Router();
 

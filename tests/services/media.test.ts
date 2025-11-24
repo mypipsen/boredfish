@@ -1,4 +1,4 @@
-import { it, describe, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { prisma } from '../../prisma/client.ts';
 import * as mediaService from '../../services/media.ts';

@@ -1,4 +1,4 @@
-import { prisma, type Prisma, type MediaType } from '../client.ts';
+import { type MediaType, type Prisma, prisma } from '../client.ts';
 
 export const mediaSeeds: Record<string, Prisma.MediaCreateInput> = {
   lotrFellowship: {

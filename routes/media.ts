@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import { z } from 'zod';
 
-import * as mediaService from '../services/media.ts';
-import { validateSchema } from '../middleware/validate.ts';
 import { requireAuth } from '../middleware/requireAuth.ts';
+import { validateSchema } from '../middleware/validate.ts';
 import { type UserMediaStatus } from '../prisma/client.ts';
+import * as mediaService from '../services/media.ts';
 
 const router = Router();
 

@@ -1,8 +1,7 @@
 import assert from 'assert';
 import { AsyncLocalStorage } from 'async_hooks';
-
 import { fromNodeHeaders } from 'better-auth/node';
-import type { Request, Response, NextFunction } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 
 import { auth } from '../services/auth.ts';
 

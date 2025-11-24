@@ -1,12 +1,12 @@
+import 'dotenv/config';
+
 import fs from 'fs';
 import path from 'path';
 
-import 'dotenv/config';
-
 import { prisma } from './client.ts';
-import { seedUsers } from './fixtures/users.ts';
 import { seedMedia } from './fixtures/media.ts';
 import { seedUserMedia } from './fixtures/userMedia.ts';
+import { seedUsers } from './fixtures/users.ts';
 
 const fixturesPath = path.join(process.cwd(), 'tests', 'fixtures.json');
 const fixtures: Record<string, object> = {};

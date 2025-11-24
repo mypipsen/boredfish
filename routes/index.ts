@@ -2,8 +2,8 @@ import type { Express } from 'express';
 
 import auth from './auth.ts';
 import chat from './chat.ts';
-import search from './search.ts';
 import media from './media.ts';
+import search from './search.ts';
 
 export function registerRoutes(app: Express) {
   app.get('/api', (req, res) => {

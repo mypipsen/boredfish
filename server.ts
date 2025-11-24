@@ -1,6 +1,7 @@
 import 'dotenv/config';
-import express from 'express';
+
 import cors from 'cors';
+import express from 'express';
 
 import { errorHandler } from './middleware/errorHandler.ts';
 import { userContext } from './middleware/userContext.ts';

@@ -4,7 +4,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch npm start",
+      "name": "Run server",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "start"],
       "console": "integratedTerminal",
