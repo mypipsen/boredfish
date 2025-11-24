@@ -5,6 +5,7 @@
   "main": "app.ts",
   "scripts": {
     "test": "vitest",
+    "coverage": "vitest run --coverage",
     "start": "node --watch server.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -35,6 +36,7 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.5",
     "@types/node": "^24.10.1",
+    "@vitest/coverage-v8": "^4.0.13",
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-simple-import-sort": "^12.1.1",
