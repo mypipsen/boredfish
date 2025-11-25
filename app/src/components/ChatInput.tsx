@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { Send } from "lucide-react";
-import { Button } from "./ui/button";
-import { cn } from "@/lib/utils";
+import { useState } from 'react';
+import { Send } from 'lucide-react';
+import { Button } from './ui/button';
+import { cn } from '@/lib/utils';
 
 interface ChatInputProps {
   onSend: (message: string) => void;
@@ -9,13 +9,13 @@ interface ChatInputProps {
 }
 
 export const ChatInput = ({ onSend, disabled }: ChatInputProps) => {
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (input.trim() && !disabled) {
       onSend(input.trim());
-      setInput("");
+      setInput('');
     }
   };
 
@@ -28,12 +28,12 @@ export const ChatInput = ({ onSend, disabled }: ChatInputProps) => {
         placeholder="Search for movies or TV shows..."
         disabled={disabled}
         className={cn(
-          "flex-1 bg-secondary/80 backdrop-blur-sm text-foreground placeholder:text-muted-foreground",
-          "rounded-2xl px-5 py-4 text-sm outline-none",
-          "border border-border/50",
-          "focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all",
-          "disabled:opacity-50 disabled:cursor-not-allowed",
-          "shadow-lg shadow-black/5"
+          'flex-1 bg-secondary/80 backdrop-blur-sm text-foreground placeholder:text-muted-foreground',
+          'rounded-2xl px-5 py-4 text-sm outline-none',
+          'border border-border/50',
+          'focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all',
+          'disabled:opacity-50 disabled:cursor-not-allowed',
+          'shadow-lg shadow-black/5'
         )}
       />
       <Button

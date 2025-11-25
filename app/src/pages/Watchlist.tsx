@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { TopNav } from "@/components/TopNav";
-import { MediaCard, Media } from "@/components/MediaCard";
-import { useToast } from "@/hooks/use-toast";
-import { useMedia } from "@/hooks/useMedia";
+import { useState } from 'react';
+import { TopNav } from '@/components/TopNav';
+import { MediaCard } from '@/components/MediaCard';
+import { useToast } from '@/hooks/useToast';
+import { useMedia } from '@/hooks/useMedia';
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -11,36 +11,34 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { ThumbsUp, ThumbsDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/alert-dialog';
+import { ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Media } from '@/types';
+import { deleteMedia, updateMedia } from '@/services/api';
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from '@/constants';
 
 const Watchlist = () => {
-  const { items, isLoading, refetch } = useMedia("watchlist");
+  const { items, isLoading, refetch } = useMedia('watchlist');
   const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<Media | null>(null);
   const { toast } = useToast();
 
   const handleRemove = async (id: number) => {
     try {
-      const response = await fetch(`/api/media/${id}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
-
-      if (!response.ok) throw new Error("Failed to remove from watchlist");
+      await deleteMedia(id);
 
       toast({
-        title: "Removed from watchlist",
-        description: "Item has been removed from your watchlist.",
+        title: 'Removed from watchlist',
+        description: 'Item has been removed from your watchlist.',
       });
-      
+
       refetch();
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to remove from watchlist. Please try again.",
-        variant: "destructive",
+        title: 'Error',
+        description: ERROR_MESSAGES.REMOVE_FAILED,
+        variant: 'destructive',
       });
     }
   };
@@ -54,22 +52,13 @@ const Watchlist = () => {
     if (!selectedItem) return;
 
     try {
-      const response = await fetch(`/api/media/${selectedItem.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          liked,
-          status: "archived",
-        }),
+      await updateMedia(selectedItem.id, {
+        liked,
+        status: 'archived',
       });
 
-      if (!response.ok) throw new Error("Failed to archive item");
-
       toast({
-        title: "Archived",
+        title: SUCCESS_MESSAGES.ARCHIVED,
         description: `${selectedItem.title} has been archived.`,
       });
 
@@ -78,9 +67,9 @@ const Watchlist = () => {
       refetch();
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to archive item. Please try again.",
-        variant: "destructive",
+        title: 'Error',
+        description: ERROR_MESSAGES.ARCHIVE_FAILED,
+        variant: 'destructive',
       });
     }
   };
@@ -94,9 +83,7 @@ const Watchlist = () => {
         {isLoading ? (
           <div className="text-center text-muted-foreground">Loading...</div>
         ) : items.length === 0 ? (
-          <div className="text-center text-muted-foreground">
-            Your watchlist is empty
-          </div>
+          <div className="text-center text-muted-foreground">Your watchlist is empty</div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {items.map((item) => (
@@ -118,24 +105,15 @@ const Watchlist = () => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Archive {selectedItem?.title}?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Did you like this {selectedItem?.type}?
-            </AlertDialogDescription>
+            <AlertDialogDescription>Did you like this {selectedItem?.type}?</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="flex-col sm:flex-row gap-2">
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <Button
-              onClick={() => handleArchive(false)}
-              variant="outline"
-              className="gap-2"
-            >
+            <Button onClick={() => handleArchive(false)} variant="outline" className="gap-2">
               <ThumbsDown className="h-4 w-4" />
               Disliked
             </Button>
-            <Button
-              onClick={() => handleArchive(true)}
-              className="gap-2"
-            >
+            <Button onClick={() => handleArchive(true)} className="gap-2">
               <ThumbsUp className="h-4 w-4" />
               Liked
             </Button>

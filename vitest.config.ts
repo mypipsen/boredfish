@@ -6,7 +6,7 @@ export default defineConfig({
     setupFiles: ['./tests/setup.ts'],
     coverage: {
       include: ['**/*.{ts,tsx}'],
-      exclude: ['prisma.config.ts', 'prisma/**/*'],
+      exclude: ['prisma.config.ts', 'prisma/**/*', 'app/**/'],
     },
   },
 });

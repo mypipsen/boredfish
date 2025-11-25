@@ -2,7 +2,7 @@
   "name": "boredfish",
   "version": "1.0.0",
   "description": "",
-  "main": "app.ts",
+  "main": "server.ts",
   "scripts": {
     "test": "vitest",
     "coverage": "vitest run --coverage",

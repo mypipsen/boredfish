@@ -1,5 +1,5 @@
-import { Navigate } from "react-router-dom";
-import { useSession } from "@/lib/auth-client";
+import { Navigate } from 'react-router-dom';
+import { useSession } from '@/lib/authClient';
 
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { data: session, isPending } = useSession();

@@ -1,31 +1,32 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { Media } from '@/components/MediaCard';
-
-export interface Message {
-  id: string;
-  content: string;
-  isUser: boolean;
-  timestamp: number;
-  movies?: Media[];
-}
+import { API_ENDPOINTS, ERROR_MESSAGES, WELCOME_MESSAGE } from '@/constants';
+import { Message } from '@/types';
 
 export const useChat = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'welcome',
-      content:
-        "Hi! I'm your movie and TV show assistant. You can ask me to search for shows, add them to your watchlist, or get recommendations. Try asking about a movie!",
+      content: WELCOME_MESSAGE,
       isUser: false,
       timestamp: Date.now(),
     },
   ]);
   const [isLoading, setIsLoading] = useState(false);
+  const eventSourceRef = useRef<EventSource | null>(null);
 
-  const sendMessage = async (q: string) => {
+  useEffect(() => {
+    return () => {
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+      }
+    };
+  }, []);
+
+  const sendMessage = useCallback(async (query: string) => {
     const userMessage: Message = {
       id: `user-${Date.now()}`,
-      content: q,
+      content: query,
       isUser: true,
       timestamp: Date.now(),
     };
@@ -34,7 +35,12 @@ export const useChat = () => {
     setIsLoading(true);
 
     try {
-      const eventSource = new EventSource(`/api/chat?q=${encodeURIComponent(q)}`);
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+      }
+
+      const eventSource = new EventSource(`${API_ENDPOINTS.CHAT}?q=${encodeURIComponent(query)}`);
+      eventSourceRef.current = eventSource;
 
       const botMessage: Message = {
         id: `bot-${Date.now()}`,
@@ -46,37 +52,50 @@ export const useChat = () => {
 
       setMessages((prev) => [...prev, botMessage]);
 
-      eventSource.onopen = () => console.log('SSE connected!');
-      eventSource.onerror = (err) => console.error('SSE error:', err);
-
       eventSource.onmessage = (event) => {
         const { text, movies } = JSON.parse(event.data);
 
         setMessages((prev) =>
           prev.map((message) =>
-            message.id === botMessage.id ? { ...message, content: text, movies: movies } : message
+            message.id === botMessage.id ? { ...message, content: text, movies } : message
           )
         );
       };
 
       eventSource.addEventListener('end', () => {
-        console.log('SSE stream ended');
         eventSource.close();
+        eventSourceRef.current = null;
+        setIsLoading(false);
       });
+
+      eventSource.onerror = (err) => {
+        console.error('SSE error:', err);
+        eventSource.close();
+        eventSourceRef.current = null;
+
+        setMessages((prev) => [
+          ...prev.filter((msg) => msg.id !== botMessage.id),
+          {
+            ...botMessage,
+            content: ERROR_MESSAGES.CHAT_FAILED,
+          },
+        ]);
+        setIsLoading(false);
+      };
     } catch (error) {
-      console.error(error);
+      console.error('Chat error:', error);
 
       const errorMessage: Message = {
         id: `bot-${Date.now()}`,
-        content: "Sorry, I couldn't search for that right now. Please try again.",
+        content: ERROR_MESSAGES.CHAT_FAILED,
         isUser: false,
         timestamp: Date.now(),
       };
+
       setMessages((prev) => [...prev, errorMessage]);
-    } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   return { messages, sendMessage, isLoading };
 };

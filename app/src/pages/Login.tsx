@@ -1,14 +1,15 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { signIn, useSession } from "@/lib/auth-client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
+import { useState, useEffect, FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { signIn, useSession } from '@/lib/authClient';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/useToast';
+import { ERROR_MESSAGES } from '@/constants';
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -16,11 +17,11 @@ const Login = () => {
 
   useEffect(() => {
     if (session) {
-      navigate("/");
+      navigate('/');
     }
   }, [session, navigate]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
 
@@ -31,15 +32,15 @@ const Login = () => {
       });
 
       if (result.error) {
-        throw new Error(result.error.message || "Login failed");
+        throw new Error(result.error.message || ERROR_MESSAGES.LOGIN_FAILED);
       }
 
-      navigate("/");
+      navigate('/');
     } catch (error) {
       toast({
-        title: "Login failed",
-        description: error instanceof Error ? error.message : "Invalid credentials",
-        variant: "destructive",
+        title: 'Login failed',
+        description: error instanceof Error ? error.message : ERROR_MESSAGES.LOGIN_FAILED,
+        variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
@@ -80,7 +81,7 @@ const Login = () => {
           </div>
 
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Signing in..." : "Sign in"}
+            {isLoading ? 'Signing in...' : 'Sign in'}
           </Button>
         </form>
       </div>

@@ -1,8 +1,9 @@
-import { createContext, useContext, ReactNode } from "react";
-import { useSession, signIn, signOut } from "@/lib/auth-client";
+import { createContext, useContext, ReactNode } from 'react';
+import { useSession, signIn, signOut } from '@/lib/authClient';
+import { User } from '@/types';
 
 interface AuthContextType {
-  user: { id: string; email: string; name?: string } | null;
+  user: User | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   isLoading: boolean;
@@ -20,7 +21,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
 
     if (result.error) {
-      throw new Error(result.error.message || "Login failed");
+      throw new Error(result.error.message || 'Login failed');
     }
   };
 
@@ -37,9 +38,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     : null;
 
   return (
-    <AuthContext.Provider
-      value={{ user, login, logout, isLoading: isPending }}
-    >
+    <AuthContext.Provider value={{ user, login, logout, isLoading: isPending }}>
       {children}
     </AuthContext.Provider>
   );
@@ -48,7 +47,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useAuth must be used within AuthProvider");
+    throw new Error('useAuth must be used within AuthProvider');
   }
   return context;
 };

@@ -1,20 +1,10 @@
-import { Star, Plus, Trash2, ThumbsUp, ThumbsDown, Archive } from "lucide-react";
-import { Button } from "./ui/button";
-import { useToast } from "@/hooks/use-toast";
-
-export interface Media {
-  id: number;
-  title: string;
-  description: string;
-  year: number;
-  poster: string;
-  type: "movie" | "tv";
-  rating: number;
-  releaseDate: Date | string;
-  createdAt: Date | string;
-  liked: boolean;
-  status: "watchlist" | "archived";
-}
+import { Star, Plus, Trash2, ThumbsUp, ThumbsDown, Archive } from 'lucide-react';
+import { Button } from './ui/button';
+import { useToast } from '@/hooks/useToast';
+import { Media } from '@/types';
+import { addMedia } from '@/services/api';
+import { formatDate } from '@/utils/date';
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from '@/constants';
 
 interface MediaCardProps {
   media: Media;
@@ -35,50 +25,36 @@ export const MediaCard = ({
   showArchiveButton = false,
   onRemove,
   onRate,
-  onArchive
+  onArchive,
 }: MediaCardProps) => {
   const { toast } = useToast();
-
-  const formatDate = (date: Date | string) => {
-    const d = new Date(date);
-    return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-  };
 
   const handleAddToWatchlist = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
     try {
-      const response = await fetch("/api/media", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          id: media.id,
-          title: media.title,
-          year: media.year.toString(),
-          releaseDate: media.releaseDate,
-          poster: media.poster,
-          type: media.type,
-          rating: media.rating,
-          description: media.description,
-          status: "watchlist",
-        }),
+      await addMedia({
+        id: media.id,
+        title: media.title,
+        year: media.year,
+        releaseDate: media.releaseDate,
+        poster: media.poster,
+        type: media.type,
+        rating: media.rating,
+        description: media.description,
+        status: 'watchlist',
       });
 
-      if (!response.ok) throw new Error("Failed to add to watchlist");
-
       toast({
-        title: "Added to watchlist",
+        title: SUCCESS_MESSAGES.ADDED_TO_WATCHLIST,
         description: `${media.title} has been added to your watchlist.`,
       });
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to add to watchlist. Please try again.",
-        variant: "destructive",
+        title: 'Error',
+        description: ERROR_MESSAGES.ADD_TO_WATCHLIST_FAILED,
+        variant: 'destructive',
       });
     }
   };
@@ -92,9 +68,7 @@ export const MediaCard = ({
       />
       <div className="flex flex-1 flex-col gap-2">
         <div>
-          <h3 className="font-semibold text-card-foreground">
-            {media.title}
-          </h3>
+          <h3 className="font-semibold text-card-foreground">{media.title}</h3>
           <p className="text-xs text-muted-foreground capitalize">
             {media.type} • {media.year}
           </p>
@@ -109,9 +83,7 @@ export const MediaCard = ({
         <div className="mt-auto flex items-center justify-between gap-2">
           <div className="flex items-center gap-1">
             <Star className="h-3 w-3 fill-primary text-primary" />
-            <span className="text-xs font-medium text-card-foreground">
-              {media.rating}
-            </span>
+            <span className="text-xs font-medium text-card-foreground">{media.rating}</span>
           </div>
           <div className="flex gap-1">
             {showAddButton && (
@@ -129,7 +101,7 @@ export const MediaCard = ({
               <>
                 <Button
                   size="sm"
-                  variant={media.liked === true ? "default" : "outline"}
+                  variant={media.liked === true ? 'default' : 'outline'}
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -141,7 +113,7 @@ export const MediaCard = ({
                 </Button>
                 <Button
                   size="sm"
-                  variant={media.liked === false ? "default" : "outline"}
+                  variant={media.liked === false ? 'default' : 'outline'}
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();

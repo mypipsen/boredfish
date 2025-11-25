@@ -1,63 +1,53 @@
-import { TopNav } from "@/components/TopNav";
-import { MediaCard, Media } from "@/components/MediaCard";
-import { useToast } from "@/hooks/use-toast";
-import { useMedia } from "@/hooks/useMedia";
+import { TopNav } from '@/components/TopNav';
+import { MediaCard } from '@/components/MediaCard';
+import { useToast } from '@/hooks/useToast';
+import { useMedia } from '@/hooks/useMedia';
+import { Media } from '@/types';
+import { deleteMedia, updateMedia } from '@/services/api';
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from '@/constants';
 
 const Archive = () => {
-  const { items, isLoading, refetch } = useMedia("archived");
+  const { items, isLoading, refetch } = useMedia('archived');
   const { toast } = useToast();
 
   const handleRemove = async (id: number) => {
     try {
-      const response = await fetch(`/api/media/${id}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
-
-      if (!response.ok) throw new Error("Failed to remove from archive");
+      await deleteMedia(id);
 
       toast({
-        title: "Removed from archive",
-        description: "Item has been removed from your archive.",
+        title: 'Removed from archive',
+        description: 'Item has been removed from your archive.',
       });
 
       refetch();
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to remove from archive. Please try again.",
-        variant: "destructive",
+        title: 'Error',
+        description: ERROR_MESSAGES.REMOVE_FAILED,
+        variant: 'destructive',
       });
     }
   };
 
   const handleToggleLike = async (item: Media) => {
     try {
-      const response = await fetch(`/api/media/${item.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          liked: !item.liked,
-          status: item.status,
-        }),
+      await updateMedia(item.id, {
+        liked: !item.liked,
+        status: item.status,
       });
 
-      if (!response.ok) throw new Error("Failed to update like status");
-
       toast({
-        title: "Updated",
+        title: SUCCESS_MESSAGES.UPDATED,
         description: `Like status updated for ${item.title}.`,
       });
 
       refetch();
     } catch (error) {
+      console.error(error);
       toast({
-        title: "Error",
-        description: "Failed to update like status. Please try again.",
-        variant: "destructive",
+        title: 'Error',
+        description: ERROR_MESSAGES.UPDATE_FAILED,
+        variant: 'destructive',
       });
     }
   };
@@ -71,9 +61,7 @@ const Archive = () => {
         {isLoading ? (
           <div className="text-center text-muted-foreground">Loading...</div>
         ) : items.length === 0 ? (
-          <div className="text-center text-muted-foreground">
-            Your archive is empty
-          </div>
+          <div className="text-center text-muted-foreground">Your archive is empty</div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {items.map((item) => (
@@ -84,7 +72,7 @@ const Archive = () => {
                 showRemoveButton={true}
                 showLikeButtons={true}
                 onRemove={() => handleRemove(item.id)}
-                onLike={() => handleToggleLike(item)}
+                onRate={() => handleToggleLike(item)}
               />
             ))}
           </div>

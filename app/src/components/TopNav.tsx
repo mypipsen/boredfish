@@ -1,8 +1,8 @@
-import { NavLink } from "react-router-dom";
-import { signOut } from "@/lib/auth-client";
-import { Button } from "./ui/button";
-import { LogOut } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { NavLink } from 'react-router-dom';
+import { signOut } from '@/lib/authClient';
+import { Button } from './ui/button';
+import { LogOut } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface TopNavProps {
   onDiscoverClick?: () => void;
@@ -15,8 +15,8 @@ export const TopNav = ({ onDiscoverClick }: TopNavProps) => {
 
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
     cn(
-      "text-sm font-medium transition-colors hover:text-foreground",
-      isActive ? "text-foreground" : "text-muted-foreground"
+      'text-sm font-medium transition-colors hover:text-foreground',
+      isActive ? 'text-foreground' : 'text-muted-foreground'
     );
 
   return (

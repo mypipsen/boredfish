@@ -1,31 +1,32 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-import { Media } from '@/components/MediaCard';
+import { fetchMediaByStatus } from '@/services/api';
+import { Media, MediaStatus } from '@/types';
 
-export const useMedia = (status: 'watchlist' | 'archived') => {
+export const useMedia = (status: MediaStatus) => {
   const [items, setItems] = useState<Media[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
-  const fetchMedia = async () => {
+  const fetchMedia = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+
     try {
-      const response = await fetch(`/api/media?status=${status}`, {
-        credentials: 'include',
-      });
-
-      if (!response.ok) throw new Error('Failed to fetch media');
-
-      const data = await response.json();
+      const data = await fetchMediaByStatus(status);
       setItems(data || []);
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error('Failed to fetch media');
+      setError(error);
+      console.error('Error fetching media:', error);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [status]);
 
   useEffect(() => {
     fetchMedia();
-  }, [status]);
+  }, [fetchMedia]);
 
-  return { items, isLoading, refetch: fetchMedia };
+  return { items, isLoading, error, refetch: fetchMedia };
 };
