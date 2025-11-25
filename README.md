@@ -1,6 +1,21 @@
 # bored.fish
 
-bored.fish is a node.js backend application designed to help users manage movie/TV show watchlists and engage in AI-powered conversations about media. It leverages the TMDB API for media data and OpenAI for intelligent chat capabilities.
+bored.fish is a full-stack application designed to help users manage movie/TV show watchlists and engage in AI-powered conversations about media. It leverages the TMDB API for media data and OpenAI for intelligent chat capabilities.
+
+## Repository Structure
+
+```
+boredfish/
+├── app/            # React frontend (Vite + Tailwind)
+├── routes/         # Express API routes
+├── middleware/     # Express middleware
+├── services/       # Business logic
+├── prisma/         # Database schema and migrations
+├── server.ts       # Server entry point
+└── package.json    # Server dependencies
+```
+
+The server is the main application at the root, with the frontend in the `app/` subdirectory.
 
 ## Features
 
@@ -11,12 +26,23 @@ bored.fish is a node.js backend application designed to help users manage movie/
 
 ## Tech Stack
 
+### Backend (Root)
+
 - **Runtime**: [Node.js](https://nodejs.org/)
 - **Framework**: [Express](https://expressjs.com/)
 - **Database**: SQLite (via [Prisma ORM](https://www.prisma.io/))
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
 - **Testing**: [Vitest](https://vitest.dev/)
 - **External APIs**: TMDB, OpenAI
+
+### Frontend (`app/`)
+
+- **Framework**: [React](https://react.dev/)
+- **Build Tool**: [Vite](https://vitejs.dev/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **UI Components**: [Radix UI](https://www.radix-ui.com/)
+- **State Management**: [TanStack Query](https://tanstack.com/query)
+- **Routing**: [React Router](https://reactrouter.com/)
 
 ## Installation
 
@@ -27,14 +53,23 @@ bored.fish is a node.js backend application designed to help users manage movie/
     cd boredfish
     ```
 
-2.  **Install dependencies:**
+2.  **Install server dependencies:**
 
     ```sh
     fnm use
-    npm ci
+    npm install
     ```
 
-3.  **Configure Environment Variables:**
+3.  **Install frontend dependencies:**
+
+    ```sh
+    cd app
+    npm install
+    cd ..
+    ```
+
+4.  **Configure Environment Variables:**
+
     Copy the example environment file and fill in the required values.
 
     ```sh
@@ -42,13 +77,15 @@ bored.fish is a node.js backend application designed to help users manage movie/
     ```
 
     You will need to provide keys for:
-    - `DATABASE_URL` (defaults to local sqlite file)
+    - `DATABASE_URL` (defaults to `file:./dev.db`)
     - `BETTER_AUTH_SECRET`
-    - `TMDB_API_KEY` (if applicable)
+    - `TMDB_ACCESS_TOKEN`
     - `OPENAI_API_KEY` (for chat features)
 
-4.  **Database Setup:**
+5.  **Database Setup:**
+
     Generate the Prisma client, push the schema to the database, and seed it.
+
     ```sh
     npx @better-auth/cli@latest secret # Generate auth secret if needed
     npx prisma generate
@@ -58,18 +95,77 @@ bored.fish is a node.js backend application designed to help users manage movie/
 
 ## Running the Application
 
-To start the development server with hot-reloading:
+### Development Mode
+
+Start the server and app in separate terminals:
 
 ```sh
+# Start the backend server
 npm start
+
+# Start the frontend dev server
+npm run start:app
 ```
 
-The server will start on `http://localhost:3000`.
+This will start:
+
+- Backend server on `http://localhost:3000`
+- Frontend dev server on `http://localhost:8080`
+
+### Production Build
+
+Build the frontend for production:
+
+```sh
+npm run build:app
+```
+
+The built files will be in `app/dist`.
 
 ## Running Tests
 
-To run the test suite using Vitest:
+To run the backend test suite:
 
 ```sh
 npm test
 ```
+
+## Linting and Formatting
+
+```sh
+# Lint server code
+npm run lint
+
+# Format all files
+npm run format
+```
+
+## Deployment
+
+The application is configured to run on a single port in production.
+
+### Production Build
+
+1. Build the frontend:
+
+   ```sh
+   npm run build:app
+   ```
+
+   This creates optimized static files in `app/dist`.
+
+2. Start the production server:
+   ```sh
+   npm run start:prod
+   ```
+   The server will:
+   - Serve the API on `/api/*` routes
+   - Serve the built React app for all other routes
+   - Run on port 3000
+
+### Deployment Options
+
+- Deploy the entire repository to your Node.js hosting provider (Railway, Render, Fly.io, etc.)
+- Run `npm run build:app` during the build phase
+- Run `npm run start:prod` to start the server
+- The server handles both API and frontend on the same port
