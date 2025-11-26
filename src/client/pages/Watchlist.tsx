@@ -1,0 +1,128 @@
+import { ThumbsDown, ThumbsUp } from 'lucide-react';
+import { useState } from 'react';
+
+import { MediaCard } from '../components/MediaCard';
+import { TopNav } from '../components/TopNav';
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '../components/ui/alert-dialog';
+import { Button } from '../components/ui/button';
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from '../constants';
+import { useMedia } from '../hooks/useMedia';
+import { useToast } from '../hooks/useToast';
+import { deleteMedia, updateMedia } from '../services/api';
+import { Media } from '../types';
+
+const Watchlist = () => {
+  const { items, isLoading, refetch } = useMedia('watchlist');
+  const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<Media | null>(null);
+  const { toast } = useToast();
+
+  const handleRemove = async (id: number) => {
+    try {
+      await deleteMedia(id);
+
+      toast({
+        title: 'Removed from watchlist',
+        description: 'Item has been removed from your watchlist.',
+      });
+
+      refetch();
+    } catch (_error) {
+      toast({
+        title: 'Error',
+        description: ERROR_MESSAGES.REMOVE_FAILED,
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleArchiveClick = (item: Media) => {
+    setSelectedItem(item);
+    setArchiveDialogOpen(true);
+  };
+
+  const handleArchive = async (liked: boolean) => {
+    if (!selectedItem) return;
+
+    try {
+      await updateMedia(selectedItem.id, {
+        liked,
+        status: 'archived',
+      });
+
+      toast({
+        title: SUCCESS_MESSAGES.ARCHIVED,
+        description: `${selectedItem.title} has been archived.`,
+      });
+
+      setArchiveDialogOpen(false);
+      setSelectedItem(null);
+      refetch();
+    } catch (_error) {
+      toast({
+        title: 'Error',
+        description: ERROR_MESSAGES.ARCHIVE_FAILED,
+        variant: 'destructive',
+      });
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen flex-col bg-background">
+      <TopNav />
+      <main className="container mx-auto flex-1 px-4 py-8 sm:px-6 lg:px-8">
+        <h1 className="mb-8 text-3xl font-bold">My Watchlist</h1>
+
+        {isLoading ? (
+          <div className="text-center text-muted-foreground">Loading...</div>
+        ) : items.length === 0 ? (
+          <div className="text-center text-muted-foreground">Your watchlist is empty</div>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {items.map((item) => (
+              <MediaCard
+                key={item.id}
+                media={item}
+                showAddButton={false}
+                showRemoveButton={true}
+                showArchiveButton={true}
+                onRemove={() => handleRemove(item.id)}
+                onArchive={() => handleArchiveClick(item)}
+              />
+            ))}
+          </div>
+        )}
+      </main>
+
+      <AlertDialog open={archiveDialogOpen} onOpenChange={setArchiveDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Archive {selectedItem?.title}?</AlertDialogTitle>
+            <AlertDialogDescription>Did you like this {selectedItem?.type}?</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <Button onClick={() => handleArchive(false)} variant="outline" className="gap-2">
+              <ThumbsDown className="h-4 w-4" />
+              Disliked
+            </Button>
+            <Button onClick={() => handleArchive(true)} className="gap-2">
+              <ThumbsUp className="h-4 w-4" />
+              Liked
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+};
+
+export default Watchlist;

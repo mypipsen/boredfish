@@ -29,7 +29,7 @@ The server is the main application at the root, with the frontend in the `app/` 
 ### Backend (Root)
 
 - **Runtime**: [Node.js](https://nodejs.org/)
-- **Framework**: [Express](https://expressjs.com/)
+- **Framework**: [Express](https://expressjs.com/) with [vite-express](https://github.com/szymmis/vite-express)
 - **Database**: Postgres (via [Prisma ORM](https://www.prisma.io/))
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
 - **Testing**: [Vitest](https://vitest.dev/)
@@ -97,30 +97,26 @@ The server is the main application at the root, with the frontend in the `app/` 
 
 ### Development Mode
 
-Start the server and app in separate terminals:
+Start the unified development server:
 
 ```sh
-# Start the backend server
 npm start
-
-# Start the frontend dev server
-npm run start:app
 ```
 
-This will start:
-
-- Backend server on `http://localhost:3000`
-- Frontend dev server on `http://localhost:8080`
+This will start both the backend and frontend on `http://localhost:3000` with Hot Module Replacement (HMR) enabled for instant feedback on frontend changes.
 
 ### Production Build
 
-Build the frontend for production:
+Build both frontend and backend for production:
 
 ```sh
-npm run build:app
+npm run build
 ```
 
-The built files will be in `app/dist`.
+This will:
+
+- Build the frontend to `app/dist`
+- Build the backend to `dist/server.js`
 
 ## Running Tests
 
@@ -142,23 +138,26 @@ npm run format
 
 ## Deployment
 
-The application is configured to run on a single port in production.
+The application uses `vite-express` to automatically handle both development and production modes on a single port.
 
 ### Production Build
 
-1. Build the frontend:
+1. Build the application:
 
    ```sh
-   npm run build:app
+   npm run build
    ```
 
-   This creates optimized static files in `app/dist`.
+   This builds both the frontend (`app/dist`) and backend (`dist/server.js`).
 
 2. Start the production server:
+
    ```sh
    npm run start:prod
    ```
+
    The server will:
+   - Automatically detect production mode via `NODE_ENV`
    - Serve the API on `/api/*` routes
    - Serve the built React app for all other routes
    - Run on port 3000
@@ -166,6 +165,6 @@ The application is configured to run on a single port in production.
 ### Deployment Options
 
 - Deploy the entire repository to your Node.js hosting provider (Railway, Render, Fly.io, etc.)
-- Run `npm run build:app` during the build phase
-- Run `npm run start:prod` to start the server
+- Run `npm run build` during the build phase
+- Set `NODE_ENV=production` and run `npm run start:prod` to start the server
 - The server handles both API and frontend on the same port
