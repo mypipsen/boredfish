@@ -30,7 +30,7 @@ The server is the main application at the root, with the frontend in the `app/` 
 
 - **Runtime**: [Node.js](https://nodejs.org/)
 - **Framework**: [Express](https://expressjs.com/)
-- **Database**: SQLite (via [Prisma ORM](https://www.prisma.io/))
+- **Database**: Postgres (via [Prisma ORM](https://www.prisma.io/))
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
 - **Testing**: [Vitest](https://vitest.dev/)
 - **External APIs**: TMDB, OpenAI
