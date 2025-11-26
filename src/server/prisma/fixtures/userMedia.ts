@@ -14,7 +14,7 @@ type UserMediaSeed = {
 export const userMediaSeeds: Record<string, UserMediaSeed> = {
   adminLotrFellowship: {
     user: {
-      email: 'admin@bored.fish',
+      email: 'admin@pipsen.dev',
     },
     media: {
       id: 120,
@@ -24,7 +24,7 @@ export const userMediaSeeds: Record<string, UserMediaSeed> = {
   },
   adminLotrTwoTowers: {
     user: {
-      email: 'admin@bored.fish',
+      email: 'admin@pipsen.dev',
     },
     media: {
       id: 121,
@@ -34,7 +34,7 @@ export const userMediaSeeds: Record<string, UserMediaSeed> = {
   },
   adminLotrReturnKing: {
     user: {
-      email: 'admin@bored.fish',
+      email: 'admin@pipsen.dev',
     },
     media: {
       id: 122,
@@ -44,7 +44,7 @@ export const userMediaSeeds: Record<string, UserMediaSeed> = {
   },
   adminLotrRohirrim: {
     user: {
-      email: 'admin@bored.fish',
+      email: 'admin@pipsen.dev',
     },
     media: {
       id: 839033,

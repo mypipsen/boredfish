@@ -5,7 +5,7 @@ import { User } from '../types';
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (identifier: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   isLoading: boolean;
 }
@@ -15,11 +15,19 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { data: session, isPending } = useSession();
 
-  const login = async (email: string, password: string) => {
-    const result = await signIn.email({
-      email,
-      password,
-    });
+  const login = async (identifier: string, password: string) => {
+    // Detect if input is email (contains @) or username
+    const isEmail = identifier.includes('@');
+
+    const result = isEmail
+      ? await signIn.email({
+        email: identifier,
+        password,
+      })
+      : await signIn.username({
+        username: identifier,
+        password,
+      });
 
     if (result.error) {
       throw new Error(result.error.message || 'Login failed');
@@ -32,10 +40,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const user = session?.user
     ? {
-        id: session.user.id,
-        email: session.user.email,
-        name: session.user.name,
-      }
+      id: session.user.id,
+      email: session.user.email,
+      name: session.user.name,
+    }
     : null;
 
   return (

@@ -9,7 +9,7 @@ import { useToast } from '../hooks/useToast';
 import { signIn, useSession } from '../lib/authClient';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -27,10 +27,18 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const result = await signIn.email({
-        email,
-        password,
-      });
+      // Detect if input is email (contains @) or username
+      const isEmail = identifier.includes('@');
+
+      const result = isEmail
+        ? await signIn.email({
+          email: identifier,
+          password,
+        })
+        : await signIn.username({
+          username: identifier,
+          password,
+        });
 
       if (result.error) {
         throw new Error(result.error.message || ERROR_MESSAGES.LOGIN_FAILED);
@@ -58,12 +66,12 @@ const Login = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="identifier">Email or Username</Label>
             <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              id="identifier"
+              type="text"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
               required
               disabled={isLoading}
             />
