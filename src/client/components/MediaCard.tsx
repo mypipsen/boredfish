@@ -79,7 +79,7 @@ export const MediaCard = ({
         </p>
         <div className="flex flex-col gap-1 text-xs text-muted-foreground">
           <p>Release: {formatDate(media.releaseDate)}</p>
-          <p>Added: {formatDate(media.createdAt)}</p>
+          {media.createdAt && <p>Added: {formatDate(media.createdAt)}</p>}
         </div>
         <div className="mt-auto flex items-center justify-between gap-2">
           <div className="flex items-center gap-1">

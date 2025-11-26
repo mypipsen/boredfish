@@ -75,7 +75,7 @@ This is a unified monorepo with both frontend and backend in a single `src/` dir
     ```
 
     You will need to provide keys for:
-    - `DATABASE_URL` (PostgreSQL connection string)
+    - `PRISMA_DATABASE_URL` (Prisma accelerate connection string)
     - `BETTER_AUTH_SECRET`
     - `TMDB_ACCESS_TOKEN`
     - `OPENAI_API_KEY` (for chat features)
@@ -142,7 +142,7 @@ The project includes a `vercel.json` configuration for seamless Vercel deploymen
 
 1. Connect your repository to Vercel
 2. Configure environment variables in the Vercel dashboard:
-   - `DATABASE_URL`
+   - `PRISMA_DATABASE_URL`
    - `BETTER_AUTH_SECRET`
    - `TMDB_ACCESS_TOKEN`
    - `OPENAI_API_KEY`
