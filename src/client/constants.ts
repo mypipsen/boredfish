@@ -2,6 +2,7 @@ export const API_ENDPOINTS = {
   MEDIA: '/api/media',
   SEARCH: '/api/search',
   CHAT: '/api/chat',
+  UPCOMING: '/api/upcoming',
 } as const;
 
 export const WELCOME_MESSAGE =

@@ -36,6 +36,10 @@ export const searchMedia = async (query: string): Promise<Media[]> => {
   });
 };
 
+export const getUpcomingMedia = async (): Promise<Media[]> => {
+  return apiFetch<Media[]>(`${API_ENDPOINTS.UPCOMING}`);
+};
+
 export const fetchMediaByStatus = async (status: MediaStatus): Promise<Media[]> => {
   return apiFetch<Media[]>(API_ENDPOINTS.MEDIA, {
     params: { status },

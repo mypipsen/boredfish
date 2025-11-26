@@ -61,7 +61,7 @@ export const MediaCard = ({
   };
 
   return (
-    <div className="flex gap-3 rounded-lg border border-border bg-card p-3 transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10">
+    <div className="flex gap-3 rounded-lg border border-border bg-card p-3 transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 overflow-hidden">
       <img
         src={media.poster}
         alt={media.title}
