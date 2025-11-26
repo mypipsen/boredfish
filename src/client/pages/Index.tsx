@@ -101,7 +101,11 @@ const Index = () => {
 
   const displayMedia = searchQuery ? searchResults : upcomingMovies;
   const isLoading = searchQuery ? isSearching : isLoadingUpcoming;
-  const title = searchQuery ? (searchResults.length > 0 ? 'Search Results' : 'No results found') : 'Upcoming Movies';
+  const title = searchQuery
+    ? searchResults.length > 0
+      ? 'Search Results'
+      : 'No results found'
+    : 'Upcoming Movies';
 
   return (
     <div className="flex h-screen flex-col bg-gradient-to-br from-background via-background to-background/95">
