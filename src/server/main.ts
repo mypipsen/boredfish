@@ -18,6 +18,10 @@ registerRoutes(app);
 // Error handling middleware must be last, after other app.use() and routes calls
 app.use(errorHandler);
 
-ViteExpress.listen(app, port, () => {
-  console.log(`Server listening on port ${port}`);
-});
+if (!process.env.VERCEL) {
+  ViteExpress.listen(app, port, () => {
+    console.log(`Local server listening on port ${port}`);
+  });
+}
+
+export default app;
