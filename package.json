@@ -7,10 +7,10 @@
     "start": "NODE_ENV=production tsx src/server/main.ts",
     "build": "vite build",
     "test": "vitest",
-    "coverage": "vitest run --coverage",
+    "test:coverage": "vitest run --coverage",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "format": "prettier --write .",
+    "prettier": "prettier --write .",
     "prepare": "husky",
     "postinstall": "prisma generate && prisma migrate deploy"
   },

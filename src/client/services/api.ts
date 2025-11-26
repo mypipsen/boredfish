@@ -1,9 +1,9 @@
 import { API_ENDPOINTS } from '../constants';
 import { Media, MediaStatus } from '../types';
 
-interface FetchOptions extends RequestInit {
+type FetchOptions = RequestInit & {
   params?: Record<string, string>;
-}
+};
 
 const apiFetch = async <T>(url: string, options: FetchOptions = {}): Promise<T> => {
   const { params, ...fetchOptions } = options;

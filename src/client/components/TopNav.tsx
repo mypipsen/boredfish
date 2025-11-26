@@ -7,9 +7,9 @@ import { cn } from '../lib/utils';
 import { Button } from './ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet';
 
-interface TopNavProps {
+type TopNavProps = {
   onDiscoverClick?: () => void;
-}
+};
 
 export const TopNav = ({ onDiscoverClick }: TopNavProps) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

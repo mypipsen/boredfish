@@ -129,7 +129,7 @@ npm test
 npm run lint
 
 # Format all files
-npm run format
+npm run prettier
 ```
 
 ## Deployment

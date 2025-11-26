@@ -32,13 +32,13 @@ const Login = () => {
 
       const result = isEmail
         ? await signIn.email({
-          email: identifier,
-          password,
-        })
+            email: identifier,
+            password,
+          })
         : await signIn.username({
-          username: identifier,
-          password,
-        });
+            username: identifier,
+            password,
+          });
 
       if (result.error) {
         throw new Error(result.error.message || ERROR_MESSAGES.LOGIN_FAILED);

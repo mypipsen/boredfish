@@ -2,11 +2,11 @@ import { cn } from '../lib/utils';
 import { Media } from '../types';
 import { MediaCard } from './MediaCard';
 
-interface ChatMessageProps {
+type ChatMessageProps = {
   message: string;
   isUser: boolean;
   movies?: Media[];
-}
+};
 
 export const ChatMessage = ({ message, isUser, movies }: ChatMessageProps) => {
   return (

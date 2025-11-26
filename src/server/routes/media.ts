@@ -17,8 +17,7 @@ router.get(
     }),
   }),
   async (req, res) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const userId = (req as any).userId;
+    const userId = req.userId!;
     const status = req.query.status;
     const media = await mediaService.getMedia(userId, status as UserMediaStatus);
 
@@ -44,8 +43,7 @@ router.post(
     }),
   }),
   async (req, res) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const userId = (req as any).userId;
+    const userId = req.userId!;
     await mediaService.addMedia(req.body, userId);
 
     res.status(204).send();
@@ -65,11 +63,9 @@ router.patch(
     }),
   }),
   async (req, res) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const userId = (req as any).userId;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { id } = (req as any).params;
-    await mediaService.updateMedia(id, req.body, userId);
+    const userId = req.userId!;
+    const { id } = req.params;
+    await mediaService.updateMedia(Number(id), req.body, userId);
 
     res.status(204).send();
   }
@@ -84,11 +80,9 @@ router.delete(
     }),
   }),
   async (req, res) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const userId = (req as any).userId;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { id } = (req as any).params;
-    await mediaService.deleteMedia(id, userId);
+    const userId = req.userId!;
+    const { id } = req.params;
+    await mediaService.deleteMedia(Number(id), userId);
 
     res.status(204).send();
   }

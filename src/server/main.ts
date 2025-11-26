@@ -4,14 +4,12 @@ import express from 'express';
 import ViteExpress from 'vite-express';
 
 import { errorHandler } from './middleware/errorHandler.js';
-import { userContext } from './middleware/userContext.js';
 import { registerRoutes } from './routes/index.js';
 
 const app = express();
 const port = 3000;
 
 app.use(express.json());
-app.use(userContext);
 
 registerRoutes(app);
 

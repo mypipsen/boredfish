@@ -7,7 +7,7 @@ import { Media } from '../types';
 import { formatDate } from '../utils/date';
 import { Button } from './ui/button';
 
-interface MediaCardProps {
+type MediaCardProps = {
   media: Media;
   showAddButton?: boolean;
   showRemoveButton?: boolean;
@@ -16,7 +16,7 @@ interface MediaCardProps {
   onRemove?: () => void;
   onRate?: (liked: boolean) => void;
   onArchive?: () => void;
-}
+};
 
 export const MediaCard = ({
   media,

@@ -4,10 +4,10 @@ import { useState } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 
-interface SearchBarProps {
+type SearchBarProps = {
   onSearch: (query: string) => void;
   isLoading?: boolean;
-}
+};
 
 export const SearchBar = ({ onSearch, isLoading }: SearchBarProps) => {
   const [query, setQuery] = useState('');

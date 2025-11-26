@@ -4,10 +4,10 @@ import { useState } from 'react';
 import { cn } from '../lib/utils';
 import { Button } from './ui/button';
 
-interface ChatInputProps {
+type ChatInputProps = {
   onSend: (message: string) => void;
   disabled?: boolean;
-}
+};
 
 export const ChatInput = ({ onSend, disabled }: ChatInputProps) => {
   const [input, setInput] = useState('');
