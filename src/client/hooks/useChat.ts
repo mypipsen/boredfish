@@ -3,17 +3,43 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { API_ENDPOINTS, ERROR_MESSAGES, WELCOME_MESSAGE } from '../constants';
 import { Message } from '../types';
 
-export const useChat = () => {
-  const [messages, setMessages] = useState<Message[]>([
+const STORAGE_KEY = 'chat_messages';
+
+const loadMessagesFromStorage = (): Message[] => {
+  try {
+    const stored = sessionStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch (error) {
+    console.error('Failed to load messages from storage:', error);
+  }
+  return [
     {
       id: 'welcome',
       content: WELCOME_MESSAGE,
       isUser: false,
       timestamp: Date.now(),
     },
-  ]);
+  ];
+};
+
+const saveMessagesToStorage = (messages: Message[]) => {
+  try {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+  } catch (error) {
+    console.error('Failed to save messages to storage:', error);
+  }
+};
+
+export const useChat = () => {
+  const [messages, setMessages] = useState<Message[]>(loadMessagesFromStorage);
   const [isLoading, setIsLoading] = useState(false);
   const eventSourceRef = useRef<EventSource | null>(null);
+
+  useEffect(() => {
+    saveMessagesToStorage(messages);
+  }, [messages]);
 
   useEffect(() => {
     return () => {

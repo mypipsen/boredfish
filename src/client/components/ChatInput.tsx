@@ -26,7 +26,7 @@ export const ChatInput = ({ onSend, disabled }: ChatInputProps) => {
         type="text"
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        placeholder="Search for movies or TV shows..."
+        placeholder="Ask anything..."
         disabled={disabled}
         className={cn(
           'flex-1 bg-secondary/80 backdrop-blur-sm text-foreground placeholder:text-muted-foreground',

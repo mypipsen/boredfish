@@ -27,7 +27,7 @@ export const SearchBar = ({ onSearch, isLoading }: SearchBarProps) => {
           placeholder="Search for movies or TV shows..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="pr-24 h-12 text-lg bg-secondary/80 backdrop-blur-sm border-border/50 rounded-2xl shadow-lg focus-visible:ring-primary/20"
+          className="pr-24 h-12 text-sm bg-secondary/80 backdrop-blur-sm border-border/50 rounded-2xl shadow-lg focus-visible:ring-primary/20"
           disabled={isLoading}
         />
         <div className="absolute right-1.5 flex items-center">
