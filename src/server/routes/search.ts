@@ -22,4 +22,10 @@ router.get(
   }
 );
 
+router.get('/upcoming', requireAuth, async (req, res) => {
+  const results = await searchService.upcoming();
+
+  res.json(results);
+});
+
 export default router;
