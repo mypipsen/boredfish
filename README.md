@@ -6,16 +6,22 @@ bored.fish is a full-stack application designed to help users manage movie/TV sh
 
 ```
 boredfish/
-├── app/            # React frontend (Vite + Tailwind)
-├── routes/         # Express API routes
-├── middleware/     # Express middleware
-├── services/       # Business logic
-├── prisma/         # Database schema and migrations
-├── server.ts       # Server entry point
-└── package.json    # Server dependencies
+├── src/
+│   ├── client/        # React frontend (Vite + Tailwind)
+│   └── server/        # Express backend
+│       ├── routes/    # API routes
+│       ├── middleware/# Express middleware
+│       ├── services/  # Business logic
+│       ├── agents/    # AI agents
+│       ├── lib/       # Utilities
+│       ├── prisma/    # Database schema and migrations
+│       └── main.ts    # Server entry point
+├── public/            # Static assets
+├── index.html         # HTML entry point
+└── package.json       # Dependencies
 ```
 
-The server is the main application at the root, with the frontend in the `app/` subdirectory.
+This is a unified monorepo with both frontend and backend in a single `src/` directory.
 
 ## Features
 
@@ -28,14 +34,14 @@ The server is the main application at the root, with the frontend in the `app/` 
 
 ### Backend (Root)
 
-- **Runtime**: [Node.js](https://nodejs.org/)
+- **Runtime**: [Node.js](https://nodejs.org/) 22+
 - **Framework**: [Express](https://expressjs.com/) with [vite-express](https://github.com/szymmis/vite-express)
-- **Database**: Postgres (via [Prisma ORM](https://www.prisma.io/))
+- **Database**: [PostgreSQL](https://www.postgresql.org/) (via [Prisma ORM](https://www.prisma.io/))
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
 - **Testing**: [Vitest](https://vitest.dev/)
 - **External APIs**: TMDB, OpenAI
 
-### Frontend (`app/`)
+### Frontend (`src/client/`)
 
 - **Framework**: [React](https://react.dev/)
 - **Build Tool**: [Vite](https://vitejs.dev/)
@@ -53,22 +59,14 @@ The server is the main application at the root, with the frontend in the `app/` 
     cd boredfish
     ```
 
-2.  **Install server dependencies:**
+2.  **Install dependencies:**
 
     ```sh
     fnm use
     npm install
     ```
 
-3.  **Install frontend dependencies:**
-
-    ```sh
-    cd app
-    npm install
-    cd ..
-    ```
-
-4.  **Configure Environment Variables:**
+3.  **Configure Environment Variables:**
 
     Copy the example environment file and fill in the required values.
 
@@ -77,19 +75,19 @@ The server is the main application at the root, with the frontend in the `app/` 
     ```
 
     You will need to provide keys for:
-    - `DATABASE_URL` (defaults to `file:./dev.db`)
+    - `DATABASE_URL` (PostgreSQL connection string)
     - `BETTER_AUTH_SECRET`
     - `TMDB_ACCESS_TOKEN`
     - `OPENAI_API_KEY` (for chat features)
 
-5.  **Database Setup:**
+4.  **Database Setup:**
 
-    Generate the Prisma client, push the schema to the database, and seed it.
+    Ensure PostgreSQL is running, then generate the Prisma client and run migrations.
 
     ```sh
     npx @better-auth/cli@latest secret # Generate auth secret if needed
     npx prisma generate
-    npx prisma db push
+    npx prisma migrate deploy
     npx prisma db seed
     ```
 
@@ -97,26 +95,24 @@ The server is the main application at the root, with the frontend in the `app/` 
 
 ### Development Mode
 
-Start the unified development server:
+Start the development server:
 
 ```sh
-npm start
+npm run dev
 ```
 
 This will start both the backend and frontend on `http://localhost:3000` with Hot Module Replacement (HMR) enabled for instant feedback on frontend changes.
 
-### Production Build
+### Production Mode
 
-Build both frontend and backend for production:
+Build and start the production server:
 
 ```sh
 npm run build
+npm start
 ```
 
-This will:
-
-- Build the frontend to `app/dist`
-- Build the backend to `dist/server.js`
+The build command compiles the frontend to `dist/` for production serving.
 
 ## Running Tests
 
@@ -138,33 +134,31 @@ npm run format
 
 ## Deployment
 
-The application uses `vite-express` to automatically handle both development and production modes on a single port.
+The application uses `vite-express` to serve both the API and frontend on a single port.
 
-### Production Build
+### Vercel
 
-1. Build the application:
+The project includes a `vercel.json` configuration for seamless Vercel deployment:
 
-   ```sh
-   npm run build
-   ```
+1. Connect your repository to Vercel
+2. Configure environment variables in the Vercel dashboard:
+   - `DATABASE_URL`
+   - `BETTER_AUTH_SECRET`
+   - `TMDB_ACCESS_TOKEN`
+   - `OPENAI_API_KEY`
+3. Deploy
 
-   This builds both the frontend (`app/dist`) and backend (`dist/server.js`).
+Vercel will automatically:
 
-2. Start the production server:
+- Build the frontend with Vite
+- Deploy the backend as a serverless function
+- Route API requests to `/api/*` and serve the frontend for all other routes
 
-   ```sh
-   npm run start:prod
-   ```
+### Other Platforms
 
-   The server will:
-   - Automatically detect production mode via `NODE_ENV`
-   - Serve the API on `/api/*` routes
-   - Serve the built React app for all other routes
-   - Run on port 3000
+For traditional Node.js hosting (Railway, Render, Fly.io, etc.):
 
-### Deployment Options
-
-- Deploy the entire repository to your Node.js hosting provider (Railway, Render, Fly.io, etc.)
-- Run `npm run build` during the build phase
-- Set `NODE_ENV=production` and run `npm run start:prod` to start the server
-- The server handles both API and frontend on the same port
+1. Set environment variables
+2. Run `npm run build` during the build phase
+3. Set `NODE_ENV=production` and run `npm start`
+4. The server will run on port 3000 (or `PORT` environment variable)
