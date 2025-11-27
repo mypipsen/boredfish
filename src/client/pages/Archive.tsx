@@ -53,30 +53,39 @@ const Archive = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex h-screen flex-col bg-gradient-to-br from-background via-background to-background/95">
       <TopNav />
-      <main className="container mx-auto flex-1 px-4 py-8 sm:px-6 lg:px-8">
-        <h1 className="mb-8 text-3xl font-bold">Watched Archive</h1>
-
-        {isLoading ? (
-          <div className="text-center text-muted-foreground">Loading...</div>
-        ) : items.length === 0 ? (
-          <div className="text-center text-muted-foreground">Your archive is empty</div>
-        ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {items.map((item) => (
-              <MediaCard
-                key={item.id}
-                media={item}
-                showAddButton={false}
-                showRemoveButton={true}
-                showLikeButtons={true}
-                onRemove={() => handleRemove(item.id)}
-                onRate={() => handleToggleLike(item)}
-              />
-            ))}
+      <main className="flex-1 overflow-y-auto px-4 sm:px-6">
+        <div className="mx-auto max-w-6xl py-8 space-y-8">
+          <div className="flex flex-col items-center space-y-4 text-center">
+            <h1 className="text-4xl font-bold tracking-tight lg:text-5xl bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
+              Archive
+            </h1>
+            <p className="text-muted-foreground text-lg max-w-2xl">
+              History of movies and TV shows you've watched.
+            </p>
           </div>
-        )}
+
+          {isLoading ? (
+            <div className="text-center text-muted-foreground">Loading...</div>
+          ) : items.length === 0 ? (
+            <div className="text-center text-muted-foreground">Your archive is empty</div>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {items.map((item) => (
+                <MediaCard
+                  key={item.id}
+                  media={item}
+                  showAddButton={false}
+                  showRemoveButton={true}
+                  showLikeButtons={true}
+                  onRemove={() => handleRemove(item.id)}
+                  onRate={() => handleToggleLike(item)}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </main>
     </div>
   );

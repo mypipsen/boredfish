@@ -1,4 +1,5 @@
-import { Archive, Plus, Star, ThumbsDown, ThumbsUp, Trash2 } from 'lucide-react';
+import { Archive, Check, Plus, Star, ThumbsDown, ThumbsUp, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from '../constants';
 import { useToast } from '../hooks/useToast';
@@ -29,6 +30,7 @@ export const MediaCard = ({
   onArchive,
 }: MediaCardProps) => {
   const { toast } = useToast();
+  const [isAdded, setIsAdded] = useState(media.status === 'watchlist');
 
   const handleAddToWatchlist = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -51,6 +53,7 @@ export const MediaCard = ({
         title: SUCCESS_MESSAGES.ADDED_TO_WATCHLIST,
         description: `${media.title} has been added to your watchlist.`,
       });
+      setIsAdded(true);
     } catch (_error) {
       toast({
         title: 'Error',
@@ -90,12 +93,22 @@ export const MediaCard = ({
             {showAddButton && (
               <Button
                 size="sm"
-                variant="secondary"
+                variant={isAdded ? 'outline' : 'secondary'}
                 onClick={handleAddToWatchlist}
-                className="h-7 gap-1 px-2 text-xs"
+                disabled={isAdded}
+                className={`h-7 gap-1 px-2 text-xs ${isAdded ? 'cursor-default opacity-70' : 'cursor-pointer hover:bg-secondary/80'}`}
               >
-                <Plus className="h-3 w-3" />
-                Add
+                {isAdded ? (
+                  <>
+                    <Check className="h-3 w-3" />
+                    Added
+                  </>
+                ) : (
+                  <>
+                    <Plus className="h-3 w-3" />
+                    Add
+                  </>
+                )}
               </Button>
             )}
             {showLikeButtons && (
