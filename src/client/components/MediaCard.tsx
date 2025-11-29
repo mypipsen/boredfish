@@ -32,6 +32,7 @@ export const MediaCard = ({
 }: MediaCardProps) => {
   const { toast } = useToast();
   const [isAdded, setIsAdded] = useState('status' in media ? media.status === 'watchlist' : false);
+  const [imageError, setImageError] = useState(false);
 
   const handleAddToWatchlist = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -66,11 +67,18 @@ export const MediaCard = ({
 
   return (
     <div className="flex gap-3 rounded-lg border border-border bg-card p-3 transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 overflow-hidden">
-      <img
-        src={media.poster}
-        alt={media.title}
-        className="h-40 w-28 rounded object-cover shadow-md"
-      />
+      {imageError || !media.poster ? (
+        <div className="h-40 w-28 rounded bg-muted shadow-md relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-muted-foreground/10 to-transparent animate-shimmer" />
+        </div>
+      ) : (
+        <img
+          src={media.poster}
+          alt={media.title}
+          className="h-40 w-28 rounded object-cover shadow-md"
+          onError={() => setImageError(true)}
+        />
+      )}
       <div className="flex flex-1 flex-col gap-2">
         <div>
           <h3 className="font-semibold text-card-foreground">{media.title}</h3>
