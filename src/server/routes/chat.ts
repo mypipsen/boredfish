@@ -18,7 +18,7 @@ router.post(
   }),
   async (req, res) => {
     const { messages } = req.body as { messages: ModelMessage[] };
-    const stream = await chatService.chat(messages);
+    const stream = await chatService.chat(messages, req.userId!);
 
     const textStream = stream.toTextStreamResponse();
 
