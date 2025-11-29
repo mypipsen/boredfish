@@ -1,15 +1,16 @@
 import { Archive, Check, Plus, Star, ThumbsDown, ThumbsUp, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
+import type { MediaItem } from '../../shared/schema';
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from '../constants';
 import { useToast } from '../hooks/useToast';
 import { addMedia } from '../services/api';
-import { Media } from '../types';
+import type { Media } from '../types';
 import { formatDate } from '../utils/date';
 import { Button } from './ui/button';
 
 type MediaCardProps = {
-  media: Media;
+  media: MediaItem | Media;
   showAddButton?: boolean;
   showRemoveButton?: boolean;
   showLikeButtons?: boolean;
@@ -30,7 +31,7 @@ export const MediaCard = ({
   onArchive,
 }: MediaCardProps) => {
   const { toast } = useToast();
-  const [isAdded, setIsAdded] = useState(media.status === 'watchlist');
+  const [isAdded, setIsAdded] = useState('status' in media ? media.status === 'watchlist' : false);
 
   const handleAddToWatchlist = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -82,7 +83,7 @@ export const MediaCard = ({
         </p>
         <div className="flex flex-col gap-1 text-xs text-muted-foreground">
           <p>Release: {formatDate(media.releaseDate)}</p>
-          {media.createdAt && <p>Added: {formatDate(media.createdAt)}</p>}
+          {'createdAt' in media && media.createdAt && <p>Added: {formatDate(media.createdAt)}</p>}
         </div>
         <div className="mt-auto flex items-center justify-between gap-2">
           <div className="flex items-center gap-1">
@@ -115,7 +116,7 @@ export const MediaCard = ({
               <>
                 <Button
                   size="sm"
-                  variant={media.liked === true ? 'default' : 'outline'}
+                  variant={'liked' in media && media.liked === true ? 'default' : 'outline'}
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -127,7 +128,7 @@ export const MediaCard = ({
                 </Button>
                 <Button
                   size="sm"
-                  variant={media.liked === false ? 'default' : 'outline'}
+                  variant={'liked' in media && media.liked === false ? 'default' : 'outline'}
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();

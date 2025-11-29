@@ -1,23 +1,70 @@
-import { useEffect, useRef } from 'react';
+import { experimental_useObject as useObject } from '@ai-sdk/react';
+import type { ModelMessage } from 'ai';
+import { useEffect, useRef, useState } from 'react';
 
+import { chatResponseSchema, MediaItem } from '../../shared/schema';
 import logo from '../assets/bored-fish.png';
 import { ChatInput } from '../components/ChatInput';
 import { ChatMessage } from '../components/ChatMessage';
 import { TopNav } from '../components/TopNav';
-import { useChat } from '../hooks/useChat';
+import { WELCOME_MESSAGE } from '../constants';
+import type { Message } from '../types';
 
 const Chat = () => {
-  const { messages, sendMessage, isLoading: isChatLoading } = useChat();
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: 'welcome',
+      role: 'assistant',
+      content: { text: WELCOME_MESSAGE },
+    },
+  ]);
+
+  const { object, submit, isLoading } = useObject({
+    api: '/api/chat',
+    schema: chatResponseSchema,
+    onFinish: ({ object }) => {
+      if (object) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `assistant-${Date.now()}`,
+            role: 'assistant',
+            content: {
+              text: object.text || '',
+              media: object.media || [],
+            },
+          },
+        ]);
+      }
+    },
+  });
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const prevMessageCountRef = useRef(messages.length);
 
   useEffect(() => {
-    // Only scroll if messages were added (not on initial load)
-    if (messages.length > prevMessageCountRef.current) {
+    if (messages.length > prevMessageCountRef.current || isLoading) {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
     prevMessageCountRef.current = messages.length;
-  }, [messages]);
+  }, [messages, isLoading]);
+
+  const handleSendMessage = (input: string) => {
+    const newUserMessage: Message = {
+      id: `user-${Date.now()}`,
+      role: 'user',
+      content: { text: input },
+    };
+    setMessages((prev) => [...prev, newUserMessage]);
+
+    // Convert messages to ModelMessage format for the API
+    const apiMessages: ModelMessage[] = [...messages, newUserMessage].map((msg) => ({
+      role: msg.role,
+      content: msg.content.text,
+    }));
+
+    submit({ messages: apiMessages });
+  };
 
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-br from-background via-background to-background/95">
@@ -34,14 +81,21 @@ const Chat = () => {
 
           <div className="flex-1 overflow-y-auto space-y-6 pr-2 scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
             {messages.map((message) => (
-              <ChatMessage
-                key={message.id}
-                message={message.content}
-                isUser={message.isUser}
-                movies={message.movies}
-              />
+              <ChatMessage key={message.id} message={message} />
             ))}
-            {isChatLoading && (
+            {isLoading && object && (
+              <ChatMessage
+                message={{
+                  id: 'loading',
+                  role: 'assistant',
+                  content: {
+                    text: object.text || '',
+                    media: (object.media?.filter((m) => m !== undefined) ?? []) as MediaItem[],
+                  },
+                }}
+              />
+            )}
+            {isLoading && !object && (
               <div className="flex justify-start">
                 <div className="bg-secondary/80 backdrop-blur-sm rounded-2xl px-4 py-3">
                   <div className="flex gap-1">
@@ -56,7 +110,7 @@ const Chat = () => {
           </div>
 
           <div className="pt-6">
-            <ChatInput onSend={sendMessage} disabled={isChatLoading} />
+            <ChatInput onSend={handleSendMessage} status={isLoading ? 'streaming' : 'ready'} />
           </div>
         </div>
       </main>

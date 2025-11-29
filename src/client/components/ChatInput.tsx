@@ -6,11 +6,12 @@ import { Button } from './ui/button';
 
 type ChatInputProps = {
   onSend: (message: string) => void;
-  disabled?: boolean;
+  status: 'submitted' | 'streaming' | 'ready' | 'error';
 };
 
-export const ChatInput = ({ onSend, disabled }: ChatInputProps) => {
+export const ChatInput = ({ onSend, status }: ChatInputProps) => {
   const [input, setInput] = useState('');
+  const disabled = status !== 'ready';
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

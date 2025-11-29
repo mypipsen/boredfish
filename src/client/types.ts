@@ -1,26 +1,12 @@
+import type { MediaItem } from '../shared/schema';
+
 export type MediaType = 'movie' | 'tv';
 export type MediaStatus = 'watchlist' | 'archived';
 
-export interface Media {
-  id: number;
-  title: string;
-  description: string;
-  year: number;
-  poster: string;
-  type: MediaType;
-  rating: number;
-  releaseDate: Date | string;
+export interface Media extends MediaItem {
   createdAt: Date | string;
   liked: boolean;
   status: MediaStatus;
-}
-
-export interface Message {
-  id: string;
-  content: string;
-  isUser: boolean;
-  timestamp: number;
-  movies?: Media[];
 }
 
 export interface User {
@@ -28,3 +14,12 @@ export interface User {
   email: string;
   name?: string;
 }
+
+export type Message = {
+  id: string;
+  role: 'user' | 'assistant';
+  content: {
+    text: string;
+    media?: MediaItem[];
+  };
+};

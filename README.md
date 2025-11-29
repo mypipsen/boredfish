@@ -12,7 +12,6 @@ boredfish/
 │       ├── routes/    # API routes
 │       ├── middleware/# Express middleware
 │       ├── services/  # Business logic
-│       ├── agents/    # AI agents
 │       ├── lib/       # Utilities
 │       ├── prisma/    # Database schema and migrations
 │       └── main.ts    # Server entry point

@@ -1,3 +1,4 @@
+import { ModelMessage } from 'ai';
 import { Router } from 'express';
 import { z } from 'zod';
 
@@ -7,21 +8,30 @@ import * as chatService from '../services/chat.js';
 
 const router = Router();
 
-router.get(
+router.post(
   '/chat',
   requireAuth,
   validateSchema({
-    query: z.object({
-      q: z.string().min(1).max(512),
+    body: z.object({
+      messages: z.array(z.any()),
     }),
   }),
   async (req, res) => {
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
-    res.flushHeaders();
+    const { messages } = req.body as { messages: ModelMessage[] };
+    const stream = await chatService.chat(messages);
 
-    return chatService.chat(req.query.q as string, res);
+    const textStream = stream.toTextStreamResponse();
+
+    // return pipeTextStreamToResponse({ response: res, textStream });
+
+    textStream.headers.forEach((value, key) => res.setHeader(key, value));
+    if (textStream.body) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      for await (const chunk of textStream.body as any) {
+        res.write(chunk);
+      }
+    }
+    res.end();
   }
 );
 

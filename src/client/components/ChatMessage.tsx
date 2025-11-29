@@ -1,14 +1,14 @@
 import { cn } from '../lib/utils';
-import { Media } from '../types';
+import type { Message } from '../types';
 import { MediaCard } from './MediaCard';
 
 type ChatMessageProps = {
-  message: string;
-  isUser: boolean;
-  movies?: Media[];
+  message: Message;
 };
 
-export const ChatMessage = ({ message, isUser, movies }: ChatMessageProps) => {
+export const ChatMessage = ({ message }: ChatMessageProps) => {
+  const isUser = message.role === 'user';
+
   return (
     <div
       className={cn(
@@ -24,11 +24,11 @@ export const ChatMessage = ({ message, isUser, movies }: ChatMessageProps) => {
             : 'bg-secondary/80 backdrop-blur-sm text-secondary-foreground shadow-black/10 border border-border/30'
         )}
       >
-        {message}
-        {movies && movies.length > 0 && (
+        {message.content.text}
+        {message.content.media && message.content.media.length > 0 && (
           <div className="mt-4 space-y-3">
-            {movies.map((media) => (
-              <MediaCard key={media.id} media={media} showAddButton />
+            {message.content.media.map((mediaItem) => (
+              <MediaCard key={mediaItem.id} media={mediaItem} showAddButton />
             ))}
           </div>
         )}
