@@ -1,163 +1,89 @@
 # bored.fish
 
-bored.fish is a full-stack application designed to help users manage movie/TV show watchlists and engage in AI-powered conversations about media. It leverages the TMDB API for media data and OpenAI for intelligent chat capabilities.
-
-## Repository Structure
-
-```
-boredfish/
-├── src/
-│   ├── client/        # React frontend (Vite + Tailwind)
-│   └── server/        # Express backend
-│       ├── routes/    # API routes
-│       ├── middleware/# Express middleware
-│       ├── services/  # Business logic
-│       ├── lib/       # Utilities
-│       ├── prisma/    # Database schema and migrations
-│       └── main.ts    # Server entry point
-├── public/            # Static assets
-├── index.html         # HTML entry point
-└── package.json       # Dependencies
-```
-
-This is a unified monorepo with both frontend and backend in a single `src/` directory.
+A full-stack movie/TV show discovery and recommendation app with AI-powered chat.
 
 ## Features
 
-- **User Authentication**: Secure authentication managed by [Better Auth](https://better-auth.com).
-- **Watchlist Management**: Add, remove, and view movies and TV shows in your personal watchlist.
-- **AI Chat**: Chat interface powered by the Vercel AI SDK and OpenAI to discuss movies and get recommendations.
-- **Media Data**: Integration with The Movie Database (TMDB) for rich media information.
+- **Discover**: Search TMDB or browse upcoming movies/TV shows
+- **Watchlist & Archive**: Organize media with like/dislike ratings
+- **AI Chat**: Context-aware recommendations based on your preferences
+- **Authentication**: Email/password via Better Auth
 
 ## Tech Stack
 
-### Backend (Root)
+Express • Prisma • Better Auth • Vercel AI SDK • Vite • React
 
-- **Runtime**: [Node.js](https://nodejs.org/) 22+
-- **Framework**: [Express](https://expressjs.com/) with [vite-express](https://github.com/szymmis/vite-express)
-- **Database**: [PostgreSQL](https://www.postgresql.org/) (via [Prisma ORM](https://www.prisma.io/))
-- **Language**: [TypeScript](https://www.typescriptlang.org/)
-- **Testing**: [Vitest](https://vitest.dev/)
-- **External APIs**: TMDB, OpenAI
-
-### Frontend (`src/client/`)
-
-- **Framework**: [React](https://react.dev/)
-- **Build Tool**: [Vite](https://vitejs.dev/)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **UI Components**: [Radix UI](https://www.radix-ui.com/)
-- **State Management**: [TanStack Query](https://tanstack.com/query)
-- **Routing**: [React Router](https://reactrouter.com/)
-
-## Installation
-
-1.  **Clone the repository:**
-
-    ```sh
-    git clone <repository-url>
-    cd boredfish
-    ```
-
-2.  **Install dependencies:**
-
-    ```sh
-    fnm use
-    npm install
-    ```
-
-3.  **Configure Environment Variables:**
-
-    Copy the example environment file and fill in the required values.
-
-    ```sh
-    cp .env.example .env
-    ```
-
-    You will need to provide keys for:
-    - `PRISMA_DATABASE_URL` (Prisma accelerate connection string)
-    - `BETTER_AUTH_SECRET`
-    - `TMDB_ACCESS_TOKEN`
-    - `OPENAI_API_KEY` (for chat features)
-
-4.  **Database Setup:**
-
-    Ensure PostgreSQL is running, then generate the Prisma client and run migrations.
-
-    ```sh
-    npx @better-auth/cli@latest secret # Generate auth secret if needed
-    npx prisma generate
-    npx prisma migrate deploy
-    npx prisma db seed
-    ```
-
-## Running the Application
-
-### Development Mode
-
-Start the development server:
+## Quick Start
 
 ```sh
+# Install dependencies
+fnm use && npm install
+
+# Setup environment
+cp .env.example .env
+# Fill in: BETTER_AUTH_SECRET, TMDB_ACCESS_TOKEN, OPENAI_API_KEY
+
+# Start local PostgreSQL
+docker compose up -d
+
+# Run migrations
+npx prisma generate
+npx prisma migrate deploy
+
+# Seed the database with sample data
+npx prisma db seed
+
+# Start dev server
 npm run dev
 ```
 
-This will start both the backend and frontend on `http://localhost:3000` with Hot Module Replacement (HMR) enabled for instant feedback on frontend changes.
+Visit http://localhost:3000
 
-### Production Mode
+## Project Structure
 
-Build and start the production server:
+```
+src/
+├── client/          # React frontend (pages, components, hooks)
+├── server/          # Express backend (routes, services, middleware)
+│   └── prisma/      # Database schema & migrations
+└── shared/          # Shared Zod schemas
+```
+
+## Environment Variables
+
+```sh
+DATABASE_PROVIDER=postgres                    # or prisma-accelerate
+PRISMA_DATABASE_URL=postgresql://...          # DB connection string
+BETTER_AUTH_SECRET=                           # npx @better-auth/cli@latest secret
+TMDB_ACCESS_TOKEN=                            # TMDB API v4 token
+OPENAI_API_KEY=                               # OpenAI API key
+DISABLE_SIGNUP=true                           # Optional: disable registration
+```
+
+## Scripts
+
+```sh
+npm run dev              # Dev server with hot reload
+npm run build            # Build frontend
+npm start                # Production server
+npm test                 # Run tests
+npm run lint:fix         # Lint and fix
+npx prisma studio        # Database GUI
+```
+
+## Deployment
+
+### Vercel
+
+1. Connect repo to Vercel
+2. Set environment variables (use `DATABASE_PROVIDER=prisma-accelerate`)
+3. Deploy
+
+### Traditional Hosting (Railway, Render, etc.)
 
 ```sh
 npm run build
 npm start
 ```
 
-The build command compiles the frontend to `dist/` for production serving.
-
-## Running Tests
-
-To run the backend test suite:
-
-```sh
-npm test
-```
-
-## Linting and Formatting
-
-```sh
-# Lint server code
-npm run lint
-
-# Format all files
-npm run prettier
-```
-
-## Deployment
-
-The application uses `vite-express` to serve both the API and frontend on a single port.
-
-### Vercel
-
-The project includes a `vercel.json` configuration for seamless Vercel deployment:
-
-1. Connect your repository to Vercel
-2. Configure environment variables in the Vercel dashboard:
-   - `PRISMA_DATABASE_URL`
-   - `BETTER_AUTH_SECRET`
-   - `TMDB_ACCESS_TOKEN`
-   - `OPENAI_API_KEY`
-3. Deploy
-
-Vercel will automatically:
-
-- Build the frontend with Vite
-- Deploy the backend as a serverless function
-- Route API requests to `/api/*` and serve the frontend for all other routes
-
-### Other Platforms
-
-For traditional Node.js hosting (Railway, Render, Fly.io, etc.):
-
-1. Set environment variables
-2. Run `npm run build` during the build phase
-3. Set `NODE_ENV=production` and run `npm start`
-4. The server will run on port 3000 (or `PORT` environment variable)
+Set `NODE_ENV=production` and ensure PostgreSQL is accessible.
