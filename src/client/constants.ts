@@ -3,6 +3,8 @@ export const API_ENDPOINTS = {
   SEARCH: '/api/search',
   CHAT: '/api/chat',
   UPCOMING: '/api/upcoming',
+  TRENDING_MOVIES: '/api/trending/movies',
+  TRENDING_TV: '/api/trending/tv',
 } as const;
 
 export const WELCOME_MESSAGE =

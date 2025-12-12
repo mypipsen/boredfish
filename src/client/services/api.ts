@@ -40,6 +40,14 @@ export const getUpcomingMedia = async (): Promise<Media[]> => {
   return apiFetch<Media[]>(`${API_ENDPOINTS.UPCOMING}`);
 };
 
+export const getTrendingMovies = async (): Promise<Media[]> => {
+  return apiFetch<Media[]>(`${API_ENDPOINTS.TRENDING_MOVIES}`);
+};
+
+export const getTrendingTvShows = async (): Promise<Media[]> => {
+  return apiFetch<Media[]>(`${API_ENDPOINTS.TRENDING_TV}`);
+};
+
 export const fetchMediaByStatus = async (status: MediaStatus): Promise<Media[]> => {
   return apiFetch<Media[]>(API_ENDPOINTS.MEDIA, {
     params: { status },

@@ -48,3 +48,15 @@ export async function upcoming() {
 
   return results.map((result) => mapToMedia({ ...result, media_type: 'movie' }));
 }
+
+export async function getTrendingMovies() {
+  const { results } = await tmdb.trending.trending('movie', 'day');
+
+  return results.map((result) => mapToMedia({ ...result, media_type: 'movie' }));
+}
+
+export async function getTrendingTvShows() {
+  const { results } = await tmdb.trending.trending('tv', 'day');
+
+  return results.map((result) => mapToMedia({ ...result, media_type: 'tv' }));
+}

@@ -7,14 +7,24 @@ import { TopNav } from '../components/TopNav';
 import { Skeleton } from '../components/ui/skeleton';
 import { ERROR_MESSAGES } from '../constants';
 import { useToast } from '../hooks/useToast';
-import { addMedia, getUpcomingMedia, searchMedia } from '../services/api';
+import {
+  addMedia,
+  getTrendingMovies,
+  getTrendingTvShows,
+  getUpcomingMedia,
+  searchMedia,
+} from '../services/api';
 import { Media } from '../types';
 
 const Index = () => {
   const [searchResults, setSearchResults] = useState<Media[]>([]);
   const [upcomingMovies, setUpcomingMovies] = useState<Media[]>([]);
+  const [trendingMovies, setTrendingMovies] = useState<Media[]>([]);
+  const [trendingTv, setTrendingTv] = useState<Media[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [isLoadingUpcoming, setIsLoadingUpcoming] = useState(true);
+  const [isLoadingTrendingMovies, setIsLoadingTrendingMovies] = useState(true);
+  const [isLoadingTrendingTv, setIsLoadingTrendingTv] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const { toast } = useToast();
 
@@ -34,7 +44,31 @@ const Index = () => {
       }
     };
 
+    const fetchTrendingMovies = async () => {
+      try {
+        const data = await getTrendingMovies();
+        setTrendingMovies(data);
+      } catch (_error) {
+        console.error('Failed to load trending movies');
+      } finally {
+        setIsLoadingTrendingMovies(false);
+      }
+    };
+
+    const fetchTrendingTv = async () => {
+      try {
+        const data = await getTrendingTvShows();
+        setTrendingTv(data);
+      } catch (_error) {
+        console.error('Failed to load trending TV shows');
+      } finally {
+        setIsLoadingTrendingTv(false);
+      }
+    };
+
     fetchUpcoming();
+    fetchTrendingMovies();
+    fetchTrendingTv();
   }, [toast]);
 
   const handleSearch = async (query: string) => {
@@ -99,13 +133,7 @@ const Index = () => {
     }
   };
 
-  const displayMedia = searchQuery ? searchResults : upcomingMovies;
-  const isLoading = searchQuery ? isSearching : isLoadingUpcoming;
-  const title = searchQuery
-    ? searchResults.length > 0
-      ? 'Search Results'
-      : 'No results found'
-    : 'Upcoming Movies';
+
 
   return (
     <div className="flex h-screen flex-col bg-gradient-to-br from-background via-background to-background/95">
@@ -125,41 +153,125 @@ const Index = () => {
             </div>
           </div>
 
-          <div className="space-y-6">
-            <div className="flex items-center gap-2">
-              {!searchQuery && <Search className="w-5 h-5 text-primary" />}
-              <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>
-            </div>
-
-            {isLoading ? (
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-                  <div
-                    key={i}
-                    className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4"
-                  >
-                    <Skeleton className="aspect-[2/3] w-full rounded-lg" />
-                    <div className="space-y-2">
-                      <Skeleton className="h-5 w-3/4" />
-                      <Skeleton className="h-4 w-1/2" />
+          {searchQuery ? (
+            <div className="space-y-6">
+              <div className="flex items-center gap-2">
+                <h2 className="text-2xl font-semibold tracking-tight">Search Results</h2>
+              </div>
+              {isSearching ? (
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {[1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4"
+                    >
+                      <Skeleton className="aspect-[2/3] w-full rounded-lg" />
+                      <div className="space-y-2">
+                        <Skeleton className="h-5 w-3/4" />
+                        <Skeleton className="h-4 w-1/2" />
+                      </div>
                     </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  {searchResults.length > 0 ? (
+                    searchResults.map((media) => (
+                      <MediaCard
+                        key={media.id}
+                        media={media}
+                        showAddButton
+                        showLikeButtons
+                        onRate={(liked) => handleRate(media, liked)}
+                      />
+                    ))
+                  ) : (
+                    <p className="text-muted-foreground">No results found.</p>
+                  )}
+                </div>
+              )}
+            </div>
+          ) : (
+            <>
+              {/* Trending Movies */}
+              <div className="space-y-6">
+                <div className="flex items-center gap-2">
+                  <h2 className="text-2xl font-semibold tracking-tight">Trending Movies</h2>
+                </div>
+                {isLoadingTrendingMovies ? (
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {[1, 2, 3, 4].map((i) => (
+                      <Skeleton key={i} className="aspect-[2/3] w-full rounded-lg" />
+                    ))}
                   </div>
-                ))}
+                ) : (
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    {trendingMovies.map((media) => (
+                      <MediaCard
+                        key={media.id}
+                        media={media}
+                        showAddButton
+                        showLikeButtons
+                        onRate={(liked) => handleRate(media, liked)}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
-            ) : (
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                {displayMedia.map((media) => (
-                  <MediaCard
-                    key={media.id}
-                    media={media}
-                    showAddButton
-                    showLikeButtons
-                    onRate={(liked) => handleRate(media, liked)}
-                  />
-                ))}
+
+              {/* Trending TV Shows */}
+              <div className="space-y-6">
+                <div className="flex items-center gap-2">
+                  <h2 className="text-2xl font-semibold tracking-tight">Trending TV Shows</h2>
+                </div>
+                {isLoadingTrendingTv ? (
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {[1, 2, 3, 4].map((i) => (
+                      <Skeleton key={i} className="aspect-[2/3] w-full rounded-lg" />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    {trendingTv.map((media) => (
+                      <MediaCard
+                        key={media.id}
+                        media={media}
+                        showAddButton
+                        showLikeButtons
+                        onRate={(liked) => handleRate(media, liked)}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+
+              {/* Upcoming Movies */}
+              <div className="space-y-6">
+                <div className="flex items-center gap-2">
+                  <h2 className="text-2xl font-semibold tracking-tight">Upcoming Movies</h2>
+                </div>
+                {isLoadingUpcoming ? (
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {[1, 2, 3, 4].map((i) => (
+                      <Skeleton key={i} className="aspect-[2/3] w-full rounded-lg" />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    {upcomingMovies.map((media) => (
+                      <MediaCard
+                        key={media.id}
+                        media={media}
+                        showAddButton
+                        showLikeButtons
+                        onRate={(liked) => handleRate(media, liked)}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            </>
+          )}
         </div>
       </main>
     </div>

@@ -28,4 +28,16 @@ router.get('/upcoming', requireAuth, async (req, res) => {
   res.json(results);
 });
 
+router.get('/trending/movies', requireAuth, async (req, res) => {
+  const results = await searchService.getTrendingMovies();
+
+  res.json(results);
+});
+
+router.get('/trending/tv', requireAuth, async (req, res) => {
+  const results = await searchService.getTrendingTvShows();
+
+  res.json(results);
+});
+
 export default router;
